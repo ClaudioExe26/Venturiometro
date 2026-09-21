@@ -295,6 +295,13 @@
     padding-top:14px;
     text-shadow:0 1px 3px rgba(0,0,0,0.6), 0 0 8px rgba(0,0,0,0.3);
   }
+  .tabla-scroll{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  table.tabla-alertas th, table.tabla-alertas td{
+    white-space:nowrap;
+  }
   .modo-demo{
     display:inline-block;
     background:#fff3cd;
@@ -305,6 +312,45 @@
     border-radius:4px;
     font-family:'IBM Plex Mono',monospace;
     margin-left:10px;
+  }
+
+  /* ===================== MÓVIL ===================== */
+  @media (max-width:640px){
+    header{
+      grid-template-columns:1fr;
+      justify-items:center;
+      text-align:center;
+      padding:14px 16px;
+    }
+    header .titulo{ text-align:center; order:1; }
+    header .logo-centro{ order:0; }
+    header .fecha-rango{ text-align:center; order:2; font-size:0.72rem; }
+
+    main{ padding:16px 14px 40px; }
+
+    .panel-instrumento{
+      padding:16px 16px;
+      gap:16px;
+    }
+    .lectura-actual .valor{ font-size:1.6rem; }
+    .barra-riesgo-wrap{ min-width:100%; flex-basis:100%; }
+    .pill-nivel{ width:100%; text-align:center; }
+
+    .filtros{
+      gap:12px;
+    }
+    .filtros .campo{ flex:1 1 45%; min-width:140px; }
+    .filtros input, .filtros select{ width:100%; }
+    .filtros .rango-atajos{ flex:1 1 100%; }
+    .filtros button#btnAplicar{ width:100%; }
+
+    section.bloque h2{ font-size:0.98rem; }
+    section.bloque .descripcion{ font-size:0.8rem; }
+
+    .chart-card{ padding:12px 10px 8px; }
+
+    table.tabla-alertas{ font-size:0.78rem; }
+    table.tabla-alertas th, table.tabla-alertas td{ padding:7px 9px; }
   }
 </style>
 </head>
@@ -379,7 +425,7 @@
 
   <section class="bloque">
     <h2>Riesgo de infección en el tiempo</h2>
-    <p class="descripcion">Acumulación de horas de humectación por bloque continuo, evaluada contra la tabla Mills-Laplante para <em>V. pyrina</em>.</p>
+    <p class="descripcion">Acumulación del % de avance de infección por bloque continuo de mojado, evaluada con la tabla de Mills para <em>V. pyrina</em>. El control se recomienda al llegar a 75%.</p>
     <div class="chart-card">
       <canvas id="graficoRiesgo" height="70"></canvas>
     </div>
@@ -388,7 +434,7 @@
   <section class="bloque">
     <h2>Detalle hora a hora</h2>
     <p class="descripcion">Cada lectura del rango elegido, con la acumulación de humectación y el nivel de riesgo evaluado en ese momento — para revisar, por ejemplo, si un día puntual tuvo riesgo real y cuántas horas.</p>
-    <div class="chart-card" style="max-height:360px; overflow-y:auto; padding:0;">
+    <div class="chart-card tabla-scroll" style="max-height:360px; overflow-y:auto; padding:0;">
       <table class="tabla-alertas" id="tablaDetalle" style="border:none;">
         <thead>
           <tr><th>Fecha / hora</th><th>Temp.</th><th>Hoja mojada</th><th>Horas acum. · % avance</th><th>Nivel</th></tr>
@@ -401,18 +447,20 @@
   <section class="bloque">
     <h2>Alertas del período</h2>
     <p class="descripcion">Eventos donde el avance de infección alcanzó el umbral de control (≥75%) o llegó a infección establecida (100%) dentro del rango seleccionado.</p>
-    <table class="tabla-alertas">
-      <thead>
-        <tr><th>Fecha / hora</th><th>Nivel</th><th>% avance infección</th><th>Horas de mojado</th><th>Notificado</th></tr>
-      </thead>
-      <tbody id="cuerpoTablaAlertas"></tbody>
-    </table>
+    <div class="tabla-scroll">
+      <table class="tabla-alertas">
+        <thead>
+          <tr><th>Fecha / hora</th><th>Nivel</th><th>% avance infección</th><th>Horas de mojado</th><th>Notificado</th></tr>
+        </thead>
+        <tbody id="cuerpoTablaAlertas"></tbody>
+      </table>
+    </div>
   </section>
 
   <section class="bloque" id="fuenteMills">
     <h2>¿De dónde sale el riesgo que muestra esta página?</h2>
     <p class="descripcion">Cuadro: referencia general de horas de mojamiento para infección leve de Venturia y avance de la infección en cada hora, a las diferentes temperaturas señaladas. Esta es la tabla con la que el venturiómetro calcula el % de avance acumulado.</p>
-    <div class="chart-card" style="padding:0; overflow-x:auto;">
+    <div class="chart-card tabla-scroll" style="padding:0; overflow-x:auto;">
       <table class="tabla-alertas" style="border:none;">
         <thead>
           <tr><th>Temperatura promedio</th><th>N° horas para infección</th><th>% avance infección / hora</th></tr>
@@ -455,28 +503,31 @@
 
 </main>
 
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script>
 /* =========================================================================
    VENTURIÓMETRO — dashboard de solo lectura
    -------------------------------------------------------------------------
-   Este archivo consume datos ya calculados por las Cloud Functions
-   (colecciones venturiometro_lecturas / venturiometro_alertas en Firestore).
-   La única interacción del usuario es ajustar el rango de fechas / mes;
-   no hay carga ni edición manual de datos desde esta pantalla.
-
-   Para conectarlo a Firebase real:
-     1. Agregar los SDKs de Firebase (compat o modular) con tu config del
-        mismo proyecto de Cuaderno de Dardos.
-     2. Reemplazar cargarLecturas()/cargarAlertas() por consultas reales:
-          db.collection('venturiometro_lecturas')
-            .where('timestamp','>=',desde).where('timestamp','<=',hasta)
-            .orderBy('timestamp').get()
-     3. Quitar generarDatosDemo() y MODO_DEMO.
+   Lee en vivo las colecciones venturiometro_lecturas (y, más adelante,
+   venturiometro_alertas) del proyecto Firebase "venturiometro". La única
+   interacción del usuario es ajustar el rango de fechas / mes; no hay
+   carga ni edición manual de datos desde esta pantalla.
    ========================================================================= */
 
-const MODO_DEMO = true; // cambiar a false al conectar Firebase real
-document.getElementById('badgeModo').innerHTML = MODO_DEMO
-  ? '<span class="modo-demo">MODO DEMO — datos de ejemplo, no reales</span>' : '';
+const firebaseConfig = {
+  apiKey: "AIzaSyCz070i-bIt6KblNkiUJoe1zWZ9j1G2-hI",
+  authDomain: "venturiometro.firebaseapp.com",
+  projectId: "venturiometro",
+  storageBucket: "venturiometro.firebasestorage.app",
+  messagingSenderId: "675631230626",
+  appId: "1:675631230626:web:59d4ef9b8e89dc0f08b1fb"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+document.getElementById('badgeModo').innerHTML =
+  '<span class="modo-demo" style="background:#e3f3d3;border-color:#8FAF1E;color:#3a5a0a;">● datos en vivo desde Firestore</span>';
 
 const tablaMills = {
   fuente: "Tabla de Mills aportada por el usuario (TABLA_DE_MILLS_usar_venturiometro.xlsx)",
@@ -506,24 +557,31 @@ function avancePorHora(tempC){
   return rango ? rango.avancePorHoraPct : 0;
 }
 
-function generarDatosDemo(dias){
-  const ahora = new Date();
-  const lecturas = [];
-  for(let h = dias*24; h >= 0; h--){
-    const t = new Date(ahora.getTime() - h*3600*1000);
-    const horaDia = t.getHours();
-    // temperatura simulada: fría de madrugada, cálida de tarde
-    const base = 9 + 7*Math.sin((horaDia-6)/24*2*Math.PI) + (Math.random()*2-1);
-    // ventanas de humectación simuladas: noches con niebla/rocío cada ~4 días
-    const diaDelBloque = Math.floor(h/24) % 4;
-    const mojado = (diaDelBloque === 0 && (horaDia >= 22 || horaDia <= 9)) ? 1 : 0;
-    lecturas.push({
-      fecha: t,
-      temperaturaC: Math.round(base*10)/10,
-      horasHumectacion: mojado
-    });
-  }
-  return lecturas;
+function pad2(n){ return String(n).padStart(2,'0'); }
+
+// mismo formato que usa n8n al escribir fechaHora: "YYYY-MM-DDTHH:mm"
+function formatearFechaISO(d){
+  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+
+// Trae las lecturas reales desde Firestore. desdeConBuffer es unos días
+// antes del rango que el usuario pidió, para que un bloque de humectación
+// que ya venía en curso al empezar el rango se siga contando bien.
+async function obtenerLecturasFirestore(desdeConBuffer, hasta){
+  const snap = await db.collection('venturiometro_lecturas')
+    .where('fechaHora', '>=', formatearFechaISO(desdeConBuffer))
+    .where('fechaHora', '<=', formatearFechaISO(hasta))
+    .orderBy('fechaHora')
+    .get();
+
+  return snap.docs.map(doc => {
+    const d = doc.data();
+    return {
+      fecha: new Date(d.fechaHora),
+      temperaturaC: d.temperaturaC,
+      horasHumectacion: d.horasHumectacion
+    };
+  });
 }
 
 function calcularRiesgoSerie(lecturas){
@@ -555,29 +613,33 @@ function calcularRiesgoSerie(lecturas){
 }
 
 let graficoClima, graficoRiesgo;
+const esMovil = () => window.innerWidth < 640;
+const ticksXResponsive = () => ({
+  maxTicksLimit: esMovil() ? 4 : 10,
+  maxRotation: 0,
+  minRotation: 0,
+  autoSkip: true,
+  font:{ family:'IBM Plex Mono', size: esMovil() ? 9 : 10 }
+});
 const nivelColor = { sin_riesgo:'#8FAF1E', en_desarrollo:'#C9A227', controlar:'#D9791E', infeccion_establecida:'#B23A2E' };
 const nivelLabel = { sin_riesgo:'Sin riesgo', en_desarrollo:'En desarrollo', controlar:'Controlar (≥75%)', infeccion_establecida:'Infección establecida' };
 
-/* ---------------------------------------------------------------------
-   El riesgo se calcula UNA vez sobre todo el histórico disponible
-   (así una racha de humectación que empezó antes del rango elegido se
-   sigue contando bien). Los filtros de fecha/mes solo recortan qué
-   parte de esa serie ya calculada se muestra.
-   --------------------------------------------------------------------- */
-const DIAS_HISTORIA_DEMO = 120;
-const lecturasCompletas = generarDatosDemo(DIAS_HISTORIA_DEMO);
-const serieCompleta = calcularRiesgoSerie(lecturasCompletas);
+const DIAS_BUFFER_ANTERIOR = 3; // margen antes del rango, para no cortar mal un bloque de humectación en curso
 
-// rango disponible, para poner límites en los inputs de fecha
-const fechaMin = serieCompleta[0].fecha;
-const fechaMax = serieCompleta[serieCompleta.length-1].fecha;
-document.getElementById('fechaDesde').min = fechaMin.toISOString().slice(0,10);
-document.getElementById('fechaDesde').max = fechaMax.toISOString().slice(0,10);
-document.getElementById('fechaHasta').min = fechaMin.toISOString().slice(0,10);
-document.getElementById('fechaHasta').max = fechaMax.toISOString().slice(0,10);
-
-function filtrarPorRango(desde, hasta){
-  return serieCompleta.filter(s => s.fecha >= desde && s.fecha <= hasta);
+// Trae de Firestore, calcula el riesgo, recorta al rango pedido, y dibuja.
+async function cargarYRenderizar(desde, hasta){
+  document.getElementById('rangoVigente').textContent = 'cargando…';
+  try{
+    const desdeBuffer = new Date(desde.getTime() - DIAS_BUFFER_ANTERIOR*24*3600*1000);
+    const lecturas = await obtenerLecturasFirestore(desdeBuffer, hasta);
+    const serieCompleta = calcularRiesgoSerie(lecturas);
+    const serieFiltrada = serieCompleta.filter(s => s.fecha >= desde && s.fecha <= hasta);
+    render(serieFiltrada);
+  } catch(err){
+    console.error(err);
+    document.getElementById('rangoVigente').textContent = 'error al leer Firestore';
+    alert('No se pudo leer Firestore. Revisa la consola del navegador (F12) para más detalle.\n\n' + err.message);
+  }
 }
 
 function render(serie){
@@ -632,9 +694,10 @@ function render(serie){
     },
     options:{
       responsive:true,
+      aspectRatio: esMovil() ? 1.3 : 2.4,
       interaction:{mode:'index', intersect:false},
       scales:{
-        x:{ ticks:{ maxTicksLimit:10, font:{family:'IBM Plex Mono', size:10} } },
+        x:{ ticks: ticksXResponsive() },
         y:{ title:{display:true,text:'°C'} }
       },
       plugins:{ legend:{ labels:{ font:{family:'Inter', size:11} } } }
@@ -661,8 +724,9 @@ function render(serie){
     },
     options:{
       responsive:true,
+      aspectRatio: esMovil() ? 1.3 : 2.4,
       scales:{
-        x:{ ticks:{ maxTicksLimit:10, font:{family:'IBM Plex Mono', size:10} } },
+        x:{ ticks: ticksXResponsive() },
         y:{ title:{display:true,text:'% avance infección'}, min:0,
             grid:{ color: (ctx)=> ctx.tick.value===75 ? '#B23A2E' : '#eee' } }
       },
@@ -694,7 +758,7 @@ function render(serie){
       <td><span class="badge ${e.nivel}">${nivelLabel[e.nivel]}</span></td>
       <td>${e.avanceAcumuladoPct}%</td>
       <td>${e.horasAcum} h</td>
-      <td>${MODO_DEMO ? '—' : (e.notificado ? 'Sí' : 'No')}</td>
+      <td>—</td>
     `;
     cuerpo.appendChild(tr);
   }
@@ -736,12 +800,12 @@ document.querySelectorAll('.rango-atajos button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     marcarAtajoActivo(btn);
     const dias = parseInt(btn.dataset.dias,10);
-    const hasta = fechaMax;
+    const hasta = new Date();
     const desde = new Date(hasta.getTime() - dias*24*3600*1000);
     document.getElementById('fechaDesde').value = desde.toISOString().slice(0,10);
     document.getElementById('fechaHasta').value = hasta.toISOString().slice(0,10);
     document.getElementById('selectMes').value = '';
-    render(filtrarPorRango(desde, hasta));
+    cargarYRenderizar(desde, hasta);
   });
 });
 
@@ -755,24 +819,19 @@ document.getElementById('btnAplicar').addEventListener('click', ()=>{
   }
   const desde = new Date(valDesde+'T00:00:00');
   const hasta = new Date(valHasta+'T23:59:59');
-  render(filtrarPorRango(desde, hasta));
+  cargarYRenderizar(desde, hasta);
 });
 
 selectMes.addEventListener('change', ()=>{
   if(selectMes.value === '') return;
   marcarAtajoActivo(null);
   const mes = parseInt(selectMes.value,10);
-  // usa el/los años presentes en el histórico que caen en ese mes
-  const enEseMes = serieCompleta.filter(s => s.fecha.getMonth() === mes);
-  if(!enEseMes.length){
-    render([]);
-    return;
-  }
-  const desde = new Date(enEseMes[0].fecha); desde.setHours(0,0,0,0);
-  const hasta = new Date(enEseMes[enEseMes.length-1].fecha); hasta.setHours(23,59,59,999);
+  const anio = new Date().getFullYear(); // asume el año en curso
+  const desde = new Date(anio, mes, 1, 0,0,0);
+  const hasta = new Date(anio, mes+1, 0, 23,59,59); // último día de ese mes
   document.getElementById('fechaDesde').value = desde.toISOString().slice(0,10);
   document.getElementById('fechaHasta').value = hasta.toISOString().slice(0,10);
-  render(filtrarPorRango(desde, hasta));
+  cargarYRenderizar(desde, hasta);
 });
 
 // carga inicial: últimos 30 días
