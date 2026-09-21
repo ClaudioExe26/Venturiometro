@@ -166,6 +166,58 @@
     font-weight:600;
     letter-spacing:0.02em;
   }
+  .banner-accion{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 20px;
+    border-radius:6px;
+    margin-bottom:22px;
+    font-size:1rem;
+    font-weight:700;
+    border:1px solid transparent;
+  }
+  .banner-accion-icono{
+    font-size:1.3rem;
+    line-height:1;
+  }
+  .banner-accion.nivel-sin_riesgo{ background:#eef5df; color:#4d6321; border-color:#c9dba0; }
+  .banner-accion.nivel-en_desarrollo{ background:#fbf3d9; color:#7a5b00; border-color:#e9d17f; }
+  .banner-accion.nivel-controlar{ background:#fbe9d7; color:#8a4610; border-color:#eab887; }
+  .banner-accion.nivel-infeccion_establecida{ background:#fbdedb; color:#8a231a; border-color:#e79a91; }
+
+  .leyenda-niveles{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:14px;
+  }
+  .leyenda-item{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:14px 16px;
+    border-radius:6px;
+    border:1px solid transparent;
+  }
+  .leyenda-item .leyenda-icono{
+    font-size:1.2rem;
+    line-height:1.3;
+  }
+  .leyenda-item strong{
+    display:block;
+    font-size:0.92rem;
+    margin-bottom:3px;
+  }
+  .leyenda-item p{
+    margin:0;
+    font-size:0.8rem;
+    line-height:1.4;
+    opacity:0.9;
+  }
+  .leyenda-item.nivel-sin_riesgo{ background:#eef5df; color:#4d6321; border-color:#c9dba0; }
+  .leyenda-item.nivel-en_desarrollo{ background:#fbf3d9; color:#7a5b00; border-color:#e9d17f; }
+  .leyenda-item.nivel-controlar{ background:#fbe9d7; color:#8a4610; border-color:#eab887; }
+  .leyenda-item.nivel-infeccion_establecida{ background:#fbdedb; color:#8a231a; border-color:#e79a91; }
 
   /* --- Filtros --- */
   .filtros{
@@ -387,6 +439,11 @@
     <div class="pill-nivel" id="pillNivel">—</div>
   </div>
 
+  <div class="banner-accion" id="bannerAccion">
+    <span class="banner-accion-icono" id="bannerAccionIcono">●</span>
+    <span id="bannerAccionTexto">Cargando…</span>
+  </div>
+
   <div class="filtros">
     <div class="campo">
       <label>Desde</label>
@@ -437,7 +494,7 @@
     <div class="chart-card tabla-scroll" style="max-height:360px; overflow-y:auto; padding:0;">
       <table class="tabla-alertas" id="tablaDetalle" style="border:none;">
         <thead>
-          <tr><th>Fecha / hora</th><th>Temp.</th><th>Hoja mojada</th><th>Horas acum. · % avance</th><th>Nivel</th></tr>
+          <tr><th>Fecha / hora</th><th>Temp.</th><th>Humedad</th><th>P. rocío</th><th>Hoja mojada</th><th>Horas acum. · % avance</th><th>Nivel</th></tr>
         </thead>
         <tbody id="cuerpoTablaDetalle"></tbody>
       </table>
@@ -493,6 +550,41 @@
       <li><strong>Margen de seguridad:</strong> se recomienda controlar a partir de la acumulación de un 75% de avance de infección.</li>
       <li>Considerar también días con humedad relativa igual o sobre 90% como predisponentes a infección.</li>
     </ul>
+  </section>
+
+  <section class="bloque">
+    <h2>Niveles de riesgo</h2>
+    <p class="descripcion">Dependiendo de cómo esté el clima en cada momento, arriba de la página va a aparecer uno de estos 4 mensajes.</p>
+    <div class="leyenda-niveles">
+      <div class="leyenda-item nivel-sin_riesgo">
+        <span class="leyenda-icono">✅</span>
+        <div>
+          <strong>Sin riesgo</strong>
+          <p>El clima no está favoreciendo el desarrollo de Venturia en este momento.</p>
+        </div>
+      </div>
+      <div class="leyenda-item nivel-en_desarrollo">
+        <span class="leyenda-icono">🟡</span>
+        <div>
+          <strong>En desarrollo</strong>
+          <p>Se están acumulando condiciones favorables (menos de 75% de avance), pero todavía no toca actuar.</p>
+        </div>
+      </div>
+      <div class="leyenda-item nivel-controlar">
+        <span class="leyenda-icono">🟠</span>
+        <div>
+          <strong>Controlar (≥75%)</strong>
+          <p>Se alcanzó el umbral de seguridad de la tabla de Mills — controlar en las próximas 24-48 horas.</p>
+        </div>
+      </div>
+      <div class="leyenda-item nivel-infeccion_establecida">
+        <span class="leyenda-icono">🔴</span>
+        <div>
+          <strong>Infección establecida</strong>
+          <p>Se llegó al 100% de avance — se recomienda aplicar fungicida retroactivo cuanto antes.</p>
+        </div>
+      </div>
+    </div>
   </section>
 
   <p class="nota-fuente">
@@ -579,7 +671,9 @@ async function obtenerLecturasFirestore(desdeConBuffer, hasta){
     return {
       fecha: new Date(d.fechaHora),
       temperaturaC: d.temperaturaC,
-      horasHumectacion: d.horasHumectacion
+      horasHumectacion: d.horasHumectacion,
+      humedadRelativa: d.humedadRelativa,
+      puntoRocioC: d.puntoRocioC
     };
   });
 }
@@ -604,6 +698,8 @@ function calcularRiesgoSerie(lecturas){
       fecha:l.fecha,
       temperaturaC:l.temperaturaC,
       horasHumectacion:l.horasHumectacion,
+      humedadRelativa:l.humedadRelativa,
+      puntoRocioC:l.puntoRocioC,
       horasAcum: bloque.length,
       avanceAcumuladoPct: Math.round(avanceAcumuladoPct*10)/10,
       nivel
@@ -623,6 +719,13 @@ const ticksXResponsive = () => ({
 });
 const nivelColor = { sin_riesgo:'#8FAF1E', en_desarrollo:'#C9A227', controlar:'#D9791E', infeccion_establecida:'#B23A2E' };
 const nivelLabel = { sin_riesgo:'Sin riesgo', en_desarrollo:'En desarrollo', controlar:'Controlar (≥75%)', infeccion_establecida:'Infección establecida' };
+const nivelIcono = { sin_riesgo:'✅', en_desarrollo:'🟡', controlar:'🟠', infeccion_establecida:'🔴' };
+const nivelMensaje = {
+  sin_riesgo: 'Sin riesgo por ahora — el clima no está favoreciendo el desarrollo de Venturia.',
+  en_desarrollo: 'En desarrollo — hay condiciones favorables acumulándose, pero todavía no toca actuar.',
+  controlar: 'Controlar en las próximas 24-48 horas — se alcanzó el umbral de 75% de avance de infección.',
+  infeccion_establecida: 'Infección establecida — se recomienda aplicar fungicida retroactivo cuanto antes.'
+};
 
 const DIAS_BUFFER_ANTERIOR = 3; // margen antes del rango, para no cortar mal un bloque de humectación en curso
 
@@ -645,6 +748,10 @@ async function cargarYRenderizar(desde, hasta){
 function render(serie){
   if(!serie.length){
     document.getElementById('rangoVigente').textContent = 'sin datos en ese rango';
+    const banner = document.getElementById('bannerAccion');
+    banner.className = 'banner-accion';
+    document.getElementById('bannerAccionIcono').textContent = 'ℹ️';
+    document.getElementById('bannerAccionTexto').textContent = 'Sin lecturas guardadas todavía en este rango.';
     return;
   }
   const etiquetas = serie.map(s => s.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',hour:'2-digit'}));
@@ -663,6 +770,12 @@ function render(serie){
   marcador.setAttribute('data-h', ultimo.avanceAcumuladoPct+'%');
   document.getElementById('rangoVigente').textContent =
     etiquetas[0] + '  →  ' + etiquetas[etiquetas.length-1];
+
+  // --- banner de "qué hacer ahora", en lenguaje simple ---
+  const banner = document.getElementById('bannerAccion');
+  banner.className = 'banner-accion nivel-' + ultimo.nivel;
+  document.getElementById('bannerAccionIcono').textContent = nivelIcono[ultimo.nivel];
+  document.getElementById('bannerAccionTexto').textContent = nivelMensaje[ultimo.nivel];
 
   // --- gráfico clima ---
   const ctx1 = document.getElementById('graficoClima');
@@ -774,6 +887,8 @@ function render(serie){
     tr.innerHTML = `
       <td>${s.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</td>
       <td>${s.temperaturaC.toFixed(1)}°C</td>
+      <td>${s.humedadRelativa != null ? s.humedadRelativa.toFixed(0)+'%' : '—'}</td>
+      <td>${s.puntoRocioC != null ? s.puntoRocioC.toFixed(1)+'°C' : '—'}</td>
       <td>${s.horasHumectacion ? 'Sí' : '—'}</td>
       <td>${s.horasAcum} h · ${s.avanceAcumuladoPct}%</td>
       <td><span class="badge ${s.nivel==='sin_riesgo'?'':s.nivel}" style="${s.nivel==='sin_riesgo'?'background:transparent;color:#888;padding:0;':''}">${nivelLabel[s.nivel]}</span></td>
