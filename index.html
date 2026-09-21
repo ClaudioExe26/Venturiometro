@@ -818,7 +818,19 @@ function render(serie){
         x:{ ticks: ticksXResponsive() },
         y:{ title:{display:true,text:'°C'} }
       },
-      plugins:{ legend:{ labels:{ font:{family:'Inter', size:11} } } }
+      plugins:{
+        legend:{ labels:{ font:{family:'Inter', size:11} } },
+        tooltip:{
+          callbacks:{
+            label: (ctx) => {
+              if(ctx.dataset.label === 'Hoja mojada'){
+                return ctx.raw != null ? 'Hoja mojada: Sí' : null;
+              }
+              return `${ctx.dataset.label}: ${ctx.formattedValue}`;
+            }
+          }
+        }
+      }
     }
   });
 
