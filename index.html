@@ -427,6 +427,10 @@
       <div class="valor" id="tempActual">—°C</div>
     </div>
     <div class="lectura-actual">
+      <div class="etiqueta">Humedad relativa</div>
+      <div class="valor" id="humedadActual">—%</div>
+    </div>
+    <div class="lectura-actual">
       <div class="etiqueta">Horas de mojado</div>
       <div class="valor" id="horasActual">— h</div>
     </div>
@@ -759,6 +763,7 @@ function render(serie){
   // --- panel instrumento con el último dato ---
   const ultimo = serie[serie.length-1];
   document.getElementById('tempActual').textContent = ultimo.temperaturaC.toFixed(1)+'°C';
+  document.getElementById('humedadActual').textContent = (ultimo.humedadRelativa != null ? ultimo.humedadRelativa.toFixed(0) : '—')+'%';
   document.getElementById('horasActual').textContent = ultimo.horasAcum+' h';
   const pill = document.getElementById('pillNivel');
   pill.textContent = nivelLabel[ultimo.nivel] + (ultimo.avanceAcumuladoPct ? ' · '+ultimo.avanceAcumuladoPct+'%' : '');
