@@ -278,6 +278,48 @@
     color:var(--pergamino);
   }
 
+  .form-aplicacion{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    align-items:flex-end;
+  }
+  .form-aplicacion .campo{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    min-width:150px;
+  }
+  .form-aplicacion label{
+    font-size:0.72rem;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--verde-huerto);
+    font-weight:600;
+  }
+  .form-aplicacion input{
+    font-family:'Inter',sans-serif;
+    font-size:0.9rem;
+    padding:7px 10px;
+    border:1px solid var(--linea);
+    border-radius:4px;
+    background:#fff;
+    color:var(--tinta);
+  }
+  .form-aplicacion button{
+    font-family:'Inter',sans-serif;
+    font-size:0.88rem;
+    font-weight:600;
+    padding:8px 18px;
+    border-radius:4px;
+    border:none;
+    background:var(--magenta-frutea);
+    color:#fff;
+    cursor:pointer;
+  }
+  .form-aplicacion button:hover{ background:#a01650; }
+  .form-aplicacion button:disabled{ background:#c9a3b8; cursor:not-allowed; }
+
   section.bloque{
     margin-bottom:34px;
   }
@@ -498,7 +540,7 @@
     <div class="chart-card tabla-scroll" style="max-height:360px; overflow-y:auto; padding:0;">
       <table class="tabla-alertas" id="tablaDetalle" style="border:none;">
         <thead>
-          <tr><th>Fecha / hora</th><th>Temp.</th><th>Humedad</th><th>P. rocío</th><th>Hoja mojada</th><th>Horas acum. · % avance</th><th>Nivel</th></tr>
+          <tr><th>Fecha / hora</th><th>Temp.</th><th>Humedad</th><th>P. rocío</th><th>Lluvia</th><th>Hoja mojada</th><th>Horas acum. · % avance</th><th>Nivel</th></tr>
         </thead>
         <tbody id="cuerpoTablaDetalle"></tbody>
       </table>
@@ -511,9 +553,49 @@
     <div class="tabla-scroll">
       <table class="tabla-alertas">
         <thead>
-          <tr><th>Fecha / hora</th><th>Nivel</th><th>% avance infección</th><th>Horas de mojado</th><th>Notificado</th></tr>
+          <tr><th>Fecha / hora</th><th>Nivel</th><th>% avance infección</th><th>Horas de mojado</th><th>Rango temp.</th><th>Lluvia acum.</th><th>Notificado</th></tr>
         </thead>
         <tbody id="cuerpoTablaAlertas"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="bloque">
+    <h2>Registro de aplicaciones</h2>
+    <p class="descripcion">Deja registrado qué producto aplicaste y cuándo — así queda cruzado con los eventos de riesgo de arriba, para saber si el huerto quedó protegido a tiempo. Este registro es visible para cualquiera que abra esta página.</p>
+
+    <div class="chart-card" style="margin-bottom:18px;">
+      <div class="form-aplicacion">
+        <div class="campo">
+          <label>Fecha y hora</label>
+          <input type="datetime-local" id="aplFecha">
+        </div>
+        <div class="campo" style="flex:1.4; min-width:180px;">
+          <label>Producto</label>
+          <input type="text" id="aplProducto" placeholder="Ej: Luna Experience">
+        </div>
+        <div class="campo">
+          <label>Dosis (opcional)</label>
+          <input type="text" id="aplDosis" placeholder="Ej: 0,5 L/ha">
+        </div>
+        <div class="campo" style="flex:1.2; min-width:160px;">
+          <label>Aplicado por (opcional)</label>
+          <input type="text" id="aplPersona" placeholder="Ej: Juan Pérez">
+        </div>
+        <div class="campo">
+          <label>&nbsp;</label>
+          <button id="btnGuardarAplicacion">Guardar</button>
+        </div>
+      </div>
+      <div id="aplMensaje" style="font-size:0.8rem; margin-top:8px;"></div>
+    </div>
+
+    <div class="tabla-scroll">
+      <table class="tabla-alertas">
+        <thead>
+          <tr><th>Fecha / hora</th><th>Producto</th><th>Dosis</th><th>Aplicado por</th></tr>
+        </thead>
+        <tbody id="cuerpoTablaAplicaciones"><tr><td colspan="4" style="color:#888;">Cargando…</td></tr></tbody>
       </table>
     </div>
   </section>
@@ -677,7 +759,8 @@ async function obtenerLecturasFirestore(desdeConBuffer, hasta){
       temperaturaC: d.temperaturaC,
       horasHumectacion: d.horasHumectacion,
       humedadRelativa: d.humedadRelativa,
-      puntoRocioC: d.puntoRocioC
+      puntoRocioC: d.puntoRocioC,
+      lluvia: d.lluvia
     };
   });
 }
@@ -686,13 +769,16 @@ function calcularRiesgoSerie(lecturas){
   const salida = [];
   let bloque = [];
   let avanceAcumuladoPct = 0;
+  let lluviaAcumBloque = 0;
   for(const l of lecturas){
     if(l.horasHumectacion === 1){
       bloque.push(l);
       avanceAcumuladoPct += avancePorHora(l.temperaturaC);
+      lluviaAcumBloque += (l.lluvia || 0);
     } else {
       bloque = [];
       avanceAcumuladoPct = 0;
+      lluviaAcumBloque = 0;
     }
     let nivel = 'sin_riesgo';
     if(avanceAcumuladoPct >= 100) nivel = 'infeccion_establecida';
@@ -704,6 +790,8 @@ function calcularRiesgoSerie(lecturas){
       horasHumectacion:l.horasHumectacion,
       humedadRelativa:l.humedadRelativa,
       puntoRocioC:l.puntoRocioC,
+      lluvia:l.lluvia,
+      lluviaAcumBloque: Math.round(lluviaAcumBloque*10)/10,
       horasAcum: bloque.length,
       avanceAcumuladoPct: Math.round(avanceAcumuladoPct*10)/10,
       nivel
@@ -711,6 +799,8 @@ function calcularRiesgoSerie(lecturas){
   }
   return salida;
 }
+
+const UMBRAL_LAVADO_MM = 20; // sobre esto, aviso de posible lavado del producto
 
 let graficoClima, graficoRiesgo;
 const esMovil = () => window.innerWidth < 640;
@@ -846,10 +936,23 @@ function render(serie){
         data: serie.map(s=>s.avanceAcumuladoPct),
         borderColor:'#E3106F',
         backgroundColor: serie.map(s=>nivelColor[s.nivel]),
-        pointRadius: serie.map(s=> s.nivel!=='sin_riesgo' ? 3 : 0),
+        pointBackgroundColor: serie.map(s=>nivelColor[s.nivel]),
+        pointBorderColor: serie.map(s=>nivelColor[s.nivel]),
+        pointBorderWidth:0,
+        pointRadius: serie.map(s=> s.nivel!=='sin_riesgo' ? 4 : 0),
         segment:{ borderColor: ctx => nivelColor[serie[ctx.p1DataIndex]?.nivel] || '#8FAF1E' },
         fill:false,
         tension:0.15
+      },
+      {
+        label:'Umbral de control (75%)',
+        data: serie.map(()=>75),
+        borderColor:'#B23A2E',
+        borderWidth:1.5,
+        borderDash:[7,5],
+        pointRadius:0,
+        fill:false,
+        order:0
       }]
     },
     options:{
@@ -860,7 +963,7 @@ function render(serie){
         y:{ title:{display:true,text:'% avance infección'}, min:0,
             grid:{ color: (ctx)=> ctx.tick.value===75 ? '#B23A2E' : '#eee' } }
       },
-      plugins:{ legend:{ display:false } }
+      plugins:{ legend:{ display:true, labels:{ font:{family:'Inter', size:10}, boxWidth:14 } } }
     }
   });
 
@@ -874,20 +977,32 @@ function render(serie){
     const prev = eventos[eventos.length-1];
     if(prev && prev.nivel===a.nivel && (a.fecha-prev._ultimaFecha)<=3600*1000*1.5){
       prev._ultimaFecha = a.fecha; prev.horasAcum = a.horasAcum; prev.avanceAcumuladoPct = a.avanceAcumuladoPct;
+      prev.tempMin = Math.min(prev.tempMin, a.temperaturaC);
+      prev.tempMax = Math.max(prev.tempMax, a.temperaturaC);
+      prev.lluviaAcumBloque = a.lluviaAcumBloque;
     } else {
-      eventos.push({...a, _ultimaFecha:a.fecha});
+      eventos.push({...a, _ultimaFecha:a.fecha, tempMin:a.temperaturaC, tempMax:a.temperaturaC});
     }
   }
   if(!eventos.length){
-    cuerpo.innerHTML = '<tr><td colspan="5" style="color:#888;">Sin alertas en este período — el clima no alcanzó condiciones de riesgo real (no llegó al 75% de avance de infección).</td></tr>';
+    cuerpo.innerHTML = '<tr><td colspan="7" style="color:#888;">Sin alertas en este período — el clima no alcanzó condiciones de riesgo real (no llegó al 75% de avance de infección).</td></tr>';
   }
   for(const e of eventos.reverse()){
     const tr = document.createElement('tr');
+    const rangoTemp = e.tempMin===e.tempMax
+      ? `${e.tempMin.toFixed(1)}°C`
+      : `${e.tempMin.toFixed(1)}–${e.tempMax.toFixed(1)}°C`;
+    const lluviaAcum = e.lluviaAcumBloque || 0;
+    const lluviaTexto = lluviaAcum >= UMBRAL_LAVADO_MM
+      ? `⚠️ ${lluviaAcum.toFixed(1)} mm — posible lavado`
+      : (lluviaAcum > 0 ? `${lluviaAcum.toFixed(1)} mm` : '—');
     tr.innerHTML = `
       <td>${e.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</td>
       <td><span class="badge ${e.nivel}">${nivelLabel[e.nivel]}</span></td>
       <td>${e.avanceAcumuladoPct}%</td>
       <td>${e.horasAcum} h</td>
+      <td>${rangoTemp}</td>
+      <td style="${lluviaAcum >= UMBRAL_LAVADO_MM ? 'color:#B23A2E;font-weight:700;' : ''}">${lluviaTexto}</td>
       <td>—</td>
     `;
     cuerpo.appendChild(tr);
@@ -906,6 +1021,7 @@ function render(serie){
       <td>${s.temperaturaC.toFixed(1)}°C</td>
       <td>${s.humedadRelativa != null ? s.humedadRelativa.toFixed(0)+'%' : '—'}</td>
       <td>${s.puntoRocioC != null ? s.puntoRocioC.toFixed(1)+'°C' : '—'}</td>
+      <td>${s.lluvia != null ? (s.lluvia > 0 ? s.lluvia.toFixed(1)+' mm' : '—') : '—'}</td>
       <td>${s.horasHumectacion ? 'Sí' : '—'}</td>
       <td>${s.horasAcum} h · ${s.avanceAcumuladoPct}%</td>
       <td><span class="badge ${s.nivel==='sin_riesgo'?'':s.nivel}" style="${s.nivel==='sin_riesgo'?'background:transparent;color:#888;padding:0;':''}">${nivelLabel[s.nivel]}</span></td>
@@ -965,6 +1081,80 @@ selectMes.addEventListener('change', ()=>{
   document.getElementById('fechaHasta').value = hasta.toISOString().slice(0,10);
   cargarYRenderizar(desde, hasta);
 });
+
+// --- registro de aplicaciones ---
+async function cargarAplicaciones(){
+  const cuerpo = document.getElementById('cuerpoTablaAplicaciones');
+  try{
+    const snap = await db.collection('venturiometro_aplicaciones')
+      .orderBy('fecha', 'desc')
+      .limit(50)
+      .get();
+    if(snap.empty){
+      cuerpo.innerHTML = '<tr><td colspan="4" style="color:#888;">Todavía no hay aplicaciones registradas.</td></tr>';
+      return;
+    }
+    cuerpo.innerHTML = '';
+    snap.forEach(doc => {
+      const d = doc.data();
+      const fecha = new Date(d.fecha);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</td>
+        <td>${d.producto || '—'}</td>
+        <td>${d.dosis || '—'}</td>
+        <td>${d.aplicadoPor || '—'}</td>
+      `;
+      cuerpo.appendChild(tr);
+    });
+  } catch(err){
+    console.error(err);
+    cuerpo.innerHTML = '<tr><td colspan="4" style="color:#B23A2E;">No se pudo cargar el registro. Revisa la consola (F12).</td></tr>';
+  }
+}
+
+document.getElementById('btnGuardarAplicacion').addEventListener('click', async ()=>{
+  const boton = document.getElementById('btnGuardarAplicacion');
+  const mensaje = document.getElementById('aplMensaje');
+  const fechaVal = document.getElementById('aplFecha').value;
+  const producto = document.getElementById('aplProducto').value.trim();
+  const dosis = document.getElementById('aplDosis').value.trim();
+  const aplicadoPor = document.getElementById('aplPersona').value.trim();
+
+  if(!fechaVal || !producto){
+    mensaje.style.color = '#B23A2E';
+    mensaje.textContent = 'Completa al menos la fecha y el producto.';
+    return;
+  }
+
+  boton.disabled = true;
+  mensaje.style.color = '#4d6321';
+  mensaje.textContent = 'Guardando…';
+
+  try{
+    await db.collection('venturiometro_aplicaciones').add({
+      fecha: new Date(fechaVal).toISOString(),
+      producto,
+      dosis: dosis || null,
+      aplicadoPor: aplicadoPor || null,
+      registradoEl: new Date().toISOString()
+    });
+    mensaje.textContent = 'Aplicación guardada ✓';
+    document.getElementById('aplFecha').value = '';
+    document.getElementById('aplProducto').value = '';
+    document.getElementById('aplDosis').value = '';
+    document.getElementById('aplPersona').value = '';
+    cargarAplicaciones();
+  } catch(err){
+    console.error(err);
+    mensaje.style.color = '#B23A2E';
+    mensaje.textContent = 'No se pudo guardar. Revisa la consola (F12).';
+  } finally {
+    boton.disabled = false;
+  }
+});
+
+cargarAplicaciones();
 
 // carga inicial: últimos 30 días
 document.querySelector('.rango-atajos button[data-dias="30"]').click();
