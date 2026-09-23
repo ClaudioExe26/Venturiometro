@@ -414,6 +414,17 @@
   .badge.en_desarrollo{ background:var(--riesgo-leve); color:#3a2f00;}
   .badge.controlar{ background:var(--riesgo-moderado);}
   .badge.infeccion_establecida{ background:var(--riesgo-severo);}
+  .badge.correcta{ background:#8FAF1E; }
+  .badge.deficiente{ background:#D9791E; }
+  .badge.nula{ background:#B23A2E; }
+  .badge.sin_evento{ background:#9c9c9c; }
+  .subtitulo-cruce{
+    font-family:'Fraunces',serif;
+    font-size:0.95rem;
+    font-weight:600;
+    margin:26px 0 4px;
+    color:var(--verde-huerto);
+  }
 
   .nota-fuente{
     font-size:0.78rem;
@@ -661,6 +672,17 @@
           <tr><th>Fecha / hora</th><th>Producto</th><th>Dosis</th><th>Aplicado por</th></tr>
         </thead>
         <tbody id="cuerpoTablaAplicaciones"><tr><td colspan="4" style="color:#888;">Cargando…</td></tr></tbody>
+      </table>
+    </div>
+
+    <h3 class="subtitulo-cruce">Cruce de riesgo × aplicación</h3>
+    <p class="descripcion">Para cada aplicación registrada, se calcula cuántas horas pasaron desde que empezó el evento de riesgo más cercano, y se compara contra la ventana curativa y la resistencia al lavado de ese producto (según su ficha técnica) para estimar si la protección fue correcta, deficiente o nula.</p>
+    <div class="tabla-scroll">
+      <table class="tabla-alertas">
+        <thead>
+          <tr><th>Fecha aplicación</th><th>Producto</th><th>Evento de riesgo más cercano</th><th>Horas desde inicio del evento</th><th>Diagnóstico</th></tr>
+        </thead>
+        <tbody id="cuerpoTablaCruce"><tr><td colspan="5" style="color:#888;">Cargando…</td></tr></tbody>
       </table>
     </div>
   </section>
@@ -1195,8 +1217,148 @@ selectMes.addEventListener('change', ()=>{
 });
 
 // --- registro de aplicaciones ---
+// --- catálogo de fungicidas (ventana curativa y resistencia al lavado), para el cruce con el registro de aplicaciones ---
+const CATALOGO_FUNGICIDAS = [
+  { clave:'captan',    nombre:'Captan 80 WP',           ventanaCurativaHoras:null, resistenciaLavado:'baja' },
+  { clave:'mancozeb',  nombre:'Mancozeb 80 WP',         ventanaCurativaHoras:null, resistenciaLavado:'baja' },
+  { clave:'dodine',    nombre:'DODINE 65 WP',           ventanaCurativaHoras:48,   resistenciaLavado:'media' },
+  { clave:'consul',    nombre:'Consul 65 WP',           ventanaCurativaHoras:48,   resistenciaLavado:'media' },
+  { clave:'indar',     nombre:'INDAR 2F',               ventanaCurativaHoras:null, resistenciaLavado:'alta' },
+  { clave:'systhane',  nombre:'Systhane 40 WP',         ventanaCurativaHoras:96,   resistenciaLavado:'alta' },
+  { clave:'buzol',     nombre:'T-Buzol 25% WP',         ventanaCurativaHoras:96,   resistenciaLavado:'alta' },
+  { clave:'luna',      nombre:'Luna Experience 400 SC', ventanaCurativaHoras:null, resistenciaLavado:'alta' },
+  { clave:'miravis',   nombre:'Miravis Duo',            ventanaCurativaHoras:100,  resistenciaLavado:'desconocida' },
+  { clave:'sercadis',  nombre:'Sercadis Duo',           ventanaCurativaHoras:null, resistenciaLavado:'desconocida' },
+  { clave:'marcial',   nombre:'Marcial SC',             ventanaCurativaHoras:72,   resistenciaLavado:'desconocida' },
+  { clave:'bonnus',    nombre:'Bonnus 400 SC',          ventanaCurativaHoras:72,   resistenciaLavado:'desconocida' },
+  { clave:'consist',   nombre:'Consist Full 75% WG',    ventanaCurativaHoras:null, resistenciaLavado:'desconocida' },
+  { clave:'premiado',  nombre:'Premiado 250 EC',        ventanaCurativaHoras:100,  resistenciaLavado:'desconocida' }
+];
+
+function normalizarTexto(s){
+  return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+
+function buscarTodosEnCatalogo(nombreProducto){
+  const n = normalizarTexto(nombreProducto);
+  return CATALOGO_FUNGICIDAS.filter(p => n.includes(p.clave));
+}
+
+// Busca, antes de un momento dado, TODOS los bloques continuos de mojado
+// dentro de la ventana de búsqueda, y se queda con el de MAYOR % de avance
+// alcanzado (no el más cercano en el tiempo) — así una racha grande no queda
+// tapada por una racha chica que haya ocurrido justo después.
+function encontrarBloqueRelevante(serie, tiempoAplicacion, diasBusqueda){
+  const limiteInferior = new Date(tiempoAplicacion.getTime() - diasBusqueda*24*3600*1000);
+  const bloques = [];
+  let bloqueActual = [];
+  for(const punto of serie){
+    if(punto.fecha > tiempoAplicacion) break;
+    if(punto.fecha < limiteInferior){
+      if(punto.horasHumectacion !== 1) bloqueActual = [];
+      continue;
+    }
+    if(punto.horasHumectacion === 1){
+      bloqueActual.push(punto);
+    } else {
+      if(bloqueActual.length) bloques.push(bloqueActual);
+      bloqueActual = [];
+    }
+  }
+  if(bloqueActual.length) bloques.push(bloqueActual); // bloque que seguía mojado justo hasta la aplicación
+  if(!bloques.length) return null;
+
+  // el bloque relevante es el de mayor % de avance alcanzado; en caso de
+  // empate, se prefiere el más cercano a la aplicación (más reciente).
+  let mejorBloque = bloques[0];
+  let mejorPico = Math.max(...mejorBloque.map(p=>p.avanceAcumuladoPct));
+  for(const b of bloques){
+    const pico = Math.max(...b.map(p=>p.avanceAcumuladoPct));
+    if(pico > mejorPico || (pico === mejorPico && b[0].fecha > mejorBloque[0].fecha)){
+      mejorBloque = b;
+      mejorPico = pico;
+    }
+  }
+
+  const lluviaAcumulada = mejorBloque.reduce((acc,p)=>acc+(p.lluvia||0),0);
+  return {
+    inicio: mejorBloque[0].fecha,
+    fin: mejorBloque[mejorBloque.length-1].fecha,
+    picoAvance: mejorPico,
+    lluviaAcumulada
+  };
+}
+
+// Evalúa UN producto contra un bloque de riesgo ya identificado.
+function evaluarProductoContraBloque(producto, bloque, horasDesdeInicio, horasTextoSinSufijo){
+  let estado, motivo;
+  if(producto.ventanaCurativaHoras == null){
+    if(bloque.picoAvance >= 75){
+      estado = 'deficiente';
+      motivo = `${producto.nombre}: sin ventana curativa documentada, aplicado ${horasTextoSinSufijo}h después de iniciado un evento que llegó a ${bloque.picoAvance.toFixed(0)}% — es posible que ya no alcance a cubrir esta infección.`;
+    } else {
+      estado = 'correcta';
+      motivo = `${producto.nombre}: aplicado ${horasTextoSinSufijo}h después, pero el evento solo llegó a ${bloque.picoAvance.toFixed(0)}% (no cruzó el umbral de control) — no había una infección establecida que cubrir.`;
+    }
+  } else if(horasDesdeInicio <= producto.ventanaCurativaHoras){
+    estado = 'correcta';
+    motivo = `${producto.nombre}: dentro de su ventana curativa (hasta ${producto.ventanaCurativaHoras}h post-infección) — aplicado ${horasTextoSinSufijo}h después de iniciado el evento.`;
+  } else {
+    estado = 'nula';
+    motivo = `${producto.nombre}: aplicado ${horasTextoSinSufijo}h después, fuera de su ventana curativa (hasta ${producto.ventanaCurativaHoras}h).`;
+  }
+  if(estado === 'correcta' && producto.resistenciaLavado === 'baja' && bloque.lluviaAcumulada >= UMBRAL_LAVADO_MM){
+    estado = 'deficiente';
+    motivo += ` Ojo: cayeron ${bloque.lluviaAcumulada.toFixed(1)}mm durante el evento y tiene baja resistencia al lavado.`;
+  }
+  return { estado, motivo };
+}
+
+const RANGO_ESTADO = { correcta:3, deficiente:2, nula:1 }; // para elegir el mejor resultado entre varios productos
+
+function diagnosticarAplicacion(fechaAplicacion, nombreProducto, serie){
+  const productos = buscarTodosEnCatalogo(nombreProducto);
+  const bloque = encontrarBloqueRelevante(serie, fechaAplicacion, 15);
+
+  if(!bloque){
+    return { estado:'sin_evento', eventoTexto:'—', horasTexto:'—',
+      motivo: 'No se detectó un evento de humectación en los 15 días previos a esta aplicación — probablemente fue preventiva, sin un evento puntual que evaluar.' };
+  }
+
+  const horasDesdeInicio = (fechaAplicacion - bloque.inicio) / 3600000;
+  const eventoTexto = `${bloque.inicio.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})} (pico ${bloque.picoAvance.toFixed(0)}%)`;
+  const horasTexto = horasDesdeInicio >= 0 ? `${horasDesdeInicio.toFixed(0)} h después` : `${Math.abs(horasDesdeInicio).toFixed(0)} h antes`;
+  const horasTextoSinSufijo = Math.abs(horasDesdeInicio).toFixed(0);
+
+  if(!productos.length){
+    return { estado:'sin_evento', eventoTexto, horasTexto,
+      motivo: 'Ningún producto del texto ingresado coincide con el catálogo — no se pudo evaluar la ventana curativa. Revisa que el nombre escrito coincida con el de la ficha técnica (o escribe el nombre completo, ej. "Bonnus 400 SC").' };
+  }
+
+  if(horasDesdeInicio <= 0){
+    return { estado:'correcta', eventoTexto, horasTexto,
+      motivo: `Aplicado antes de que empezara el evento de riesgo — cobertura preventiva a tiempo.` };
+  }
+
+  // evalúa cada producto detectado en el texto y se queda con el MEJOR resultado
+  // (si la mezcla trae al menos un producto que cubre bien el evento, cuenta como protegida)
+  const evaluaciones = productos.map(p => evaluarProductoContraBloque(p, bloque, horasDesdeInicio, horasTextoSinSufijo));
+  let mejor = evaluaciones[0];
+  for(const ev of evaluaciones){
+    if(RANGO_ESTADO[ev.estado] > RANGO_ESTADO[mejor.estado]) mejor = ev;
+  }
+  const motivo = productos.length > 1
+    ? `Se detectaron ${productos.length} productos en el registro. ` + evaluaciones.map(e=>e.motivo).join(' ')
+    : mejor.motivo;
+
+  return { estado: mejor.estado, eventoTexto, horasTexto, motivo };
+}
+
+const diagnosticoLabel = { correcta:'Correcta', deficiente:'Deficiente', nula:'Nula', sin_evento:'Sin evento cercano' };
+
 async function cargarAplicaciones(){
   const cuerpo = document.getElementById('cuerpoTablaAplicaciones');
+  const cuerpoCruce = document.getElementById('cuerpoTablaCruce');
   try{
     const snap = await db.collection('venturiometro_aplicaciones')
       .orderBy('fecha', 'desc')
@@ -1204,12 +1366,15 @@ async function cargarAplicaciones(){
       .get();
     if(snap.empty){
       cuerpo.innerHTML = '<tr><td colspan="4" style="color:#888;">Todavía no hay aplicaciones registradas.</td></tr>';
+      cuerpoCruce.innerHTML = '<tr><td colspan="5" style="color:#888;">Todavía no hay aplicaciones registradas.</td></tr>';
       return;
     }
     cuerpo.innerHTML = '';
+    const aplicaciones = [];
     snap.forEach(doc => {
       const d = doc.data();
       const fecha = new Date(d.fecha);
+      aplicaciones.push({ fecha, producto: d.producto, dosis: d.dosis, aplicadoPor: d.aplicadoPor });
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</td>
@@ -1219,9 +1384,32 @@ async function cargarAplicaciones(){
       `;
       cuerpo.appendChild(tr);
     });
+
+    // --- cruce de riesgo x aplicación ---
+    cuerpoCruce.innerHTML = '<tr><td colspan="5" style="color:#888;">Calculando…</td></tr>';
+    const fechaMasAntigua = aplicaciones.reduce((min,a) => a.fecha < min ? a.fecha : min, aplicaciones[0].fecha);
+    const desdeBuffer = new Date(fechaMasAntigua.getTime() - 15*24*3600*1000);
+    const hastaAhora = new Date();
+    const lecturasCruce = await obtenerLecturasFirestore(desdeBuffer, hastaAhora);
+    const serieCruce = calcularRiesgoSerie(lecturasCruce);
+
+    cuerpoCruce.innerHTML = '';
+    for(const a of aplicaciones){
+      const diag = diagnosticarAplicacion(a.fecha, a.producto, serieCruce);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${a.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</td>
+        <td>${a.producto || '—'}</td>
+        <td>${diag.eventoTexto}</td>
+        <td>${diag.horasTexto}</td>
+        <td><span class="badge ${diag.estado}" title="${diag.motivo.replace(/"/g,'&quot;')}">${diagnosticoLabel[diag.estado]}</span></td>
+      `;
+      cuerpoCruce.appendChild(tr);
+    }
   } catch(err){
     console.error(err);
     cuerpo.innerHTML = '<tr><td colspan="4" style="color:#B23A2E;">No se pudo cargar el registro. Revisa la consola (F12).</td></tr>';
+    cuerpoCruce.innerHTML = '<tr><td colspan="5" style="color:#B23A2E;">No se pudo calcular el cruce. Revisa la consola (F12).</td></tr>';
   }
 }
 
