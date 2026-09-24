@@ -354,6 +354,16 @@
   }
   .form-aplicacion button:hover{ background:#a01650; }
   .form-aplicacion button:disabled{ background:#c9a3b8; cursor:not-allowed; }
+  .acceso-admin{ border-bottom:1px solid var(--linea); padding-bottom:12px; margin-bottom:14px; }
+  .acceso-admin > div{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+  .acceso-texto{ font-size:0.85rem; color:#555; }
+  .acceso-login{ display:flex; flex-wrap:wrap; gap:8px; }
+  .acceso-login input{ font-family:'Inter',sans-serif; font-size:0.85rem; padding:7px 10px; border:1px solid var(--linea); border-radius:4px; min-width:170px; }
+  button.btn-secundario, .form-aplicacion button.btn-secundario{ background:#fff; color:var(--verde-huerto); border:1px solid var(--verde-huerto); border-radius:4px; padding:7px 14px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.85rem; }
+  button.btn-secundario:hover, .form-aplicacion button.btn-secundario:hover{ background:#eef2e6; }
+  .btn-tabla{ font-family:'Inter',sans-serif; font-size:0.75rem; padding:3px 9px; border-radius:4px; cursor:pointer; background:#fff; border:1px solid var(--linea); margin-right:4px; }
+  .btn-tabla.eliminar{ color:#B23A2E; border-color:#e7b3ab; }
+  tr.en-edicion td{ background:#fbf5e0; }
 
   section.bloque{
     margin-bottom:34px;
@@ -496,6 +506,16 @@
     background:var(--magenta-frutea);
     color:#fff;
   }
+  #tablaCatalogo tr.fila-tizon td{ color:#555; }
+  #tablaPrograma tr.prog-obligatorio td{ background:#fdf1f6; }
+  #tablaPrograma tr.prog-obligatorio td:first-child{ border-left:4px solid var(--magenta-frutea); font-weight:700; color:var(--magenta-frutea); }
+  #tablaPrograma tr.prog-obligatorio td:nth-child(5){ font-weight:700; color:var(--magenta-frutea); }
+  #tablaPrograma tr.prog-condicional td:first-child{ border-left:4px dashed var(--magenta-frutea); }
+  #tablaPrograma td:nth-child(4){ text-align:center; font-weight:700; }
+  .badge-prog{ display:inline-block; font-size:0.75rem; font-weight:600; padding:2px 9px; border-radius:10px; white-space:nowrap; }
+  .badge-prog.obligatorio{ background:var(--magenta-frutea); color:#fff; }
+  .badge-prog.condicional{ background:#fff; color:var(--magenta-frutea); border:1.5px dashed var(--magenta-frutea); }
+  .badge-prog.opcional{ background:#eee; color:#555; }
   .modo-demo{
     display:inline-block;
     background:#fff3cd;
@@ -674,9 +694,25 @@
 
   <section class="bloque">
     <h2>Registro de aplicaciones</h2>
-    <p class="descripcion">Deja registrado qué producto aplicaste y cuándo — así queda cruzado con los eventos de riesgo de arriba, para saber si el huerto quedó protegido a tiempo. Este registro es visible para cualquiera que abra esta página.</p>
+    <p class="descripcion">Deja registrado qué producto aplicaste y cuándo — así queda cruzado con los eventos de riesgo de arriba, para saber si el huerto quedó protegido a tiempo. Cualquiera con el link puede verlo; solo el administrador puede registrar, editar o eliminar aplicaciones.</p>
 
     <div class="chart-card" style="margin-bottom:18px;">
+      <div class="acceso-admin">
+        <div id="accesoSinSesion">
+          <span class="acceso-texto">Solo el administrador puede registrar, editar o eliminar aplicaciones.</span>
+          <div class="acceso-login">
+            <input type="email" id="loginCorreo" placeholder="Correo" autocomplete="username">
+            <input type="password" id="loginClave" placeholder="Contraseña" autocomplete="current-password">
+            <button id="btnLogin" class="btn-secundario">Iniciar sesión</button>
+          </div>
+        </div>
+        <div id="accesoConSesion" style="display:none;">
+          <span class="acceso-texto">Sesión iniciada como <strong id="usuarioActual"></strong></span>
+          <button id="btnLogout" class="btn-secundario">Cerrar sesión</button>
+        </div>
+        <div id="loginMensaje" style="font-size:0.8rem; margin-top:6px;"></div>
+      </div>
+      <div id="zonaEdicion" style="display:none;">
       <div class="form-aplicacion">
         <div class="campo">
           <label>Fecha y hora</label>
@@ -699,14 +735,19 @@
           <label>&nbsp;</label>
           <button id="btnGuardarAplicacion">Guardar</button>
         </div>
+        <div class="campo" id="campoCancelar" style="display:none;">
+          <label>&nbsp;</label>
+          <button id="btnCancelarEdicion" class="btn-secundario">Cancelar</button>
+        </div>
       </div>
       <div id="aplMensaje" style="font-size:0.8rem; margin-top:8px;"></div>
+      </div>
     </div>
 
     <div class="tabla-scroll">
       <table class="tabla-alertas">
         <thead>
-          <tr><th>Fecha / hora</th><th>Producto</th><th>Dosis</th><th>Productor</th></tr>
+          <tr><th>Fecha / hora</th><th>Producto</th><th>Dosis</th><th>Productor</th><th class="col-acciones" style="display:none;">Acciones</th></tr>
         </thead>
         <tbody id="cuerpoTablaAplicaciones"><tr><td colspan="4" style="color:#888;">Cargando…</td></tr></tbody>
       </table>
@@ -839,13 +880,51 @@
           <tr><td>Bonnus 400 SC</td><td>Pirimetanilo</td><td>9 (D1, anilinopirimidinas)</td><td>2</td><td>Efecto retroactivo 48–72h post-infección</td><td>50–70 cc/hL (ó 1,0 L/ha)</td><td>1 día</td><td>Sin dato en etiqueta</td></tr>
           <tr><td>Consist Full 75% WG</td><td>Trifloxistrobina + Tebuconazol</td><td>11 (C3) + 3 (G1)</td><td>2</td><td>Preventivo + curativo + erradicante</td><td>20 g/100L (mín. 200 g/ha)</td><td>7 días</td><td>Sin dato en etiqueta</td></tr>
           <tr><td>Premiado 250 EC</td><td>Difenoconazol</td><td>3 (DMI/triazol)</td><td>4</td><td>Preventivo + curativo (hasta 100h post-infección)</td><td>10–15 cc/100L (mín. 200–300 cc/ha)</td><td>14 días</td><td>Sin dato en etiqueta; grupo químico asociado a mejor resistencia al lavado</td></tr>
-        </tbody>
+                  <tr><td>Polisulfuro de Calcio 350 SL</td><td>Polisulfuro de calcio</td><td>M2</td><td>4</td><td>Contacto, preventivo y curativo (sin horas en etiqueta). Solo en pleno receso</td><td>3–5 L/100L</td><td>Solo receso (caída de hojas a antes de yema rosada)</td><td>Baja — etiqueta indica repetir si llueve hasta 3 días después</td></tr>
+          <tr><td>Syllit 400 SC</td><td>Dodina (mismo activo que Consul y Dodine)</td><td>M7</td><td>4 (preventivas + curativas)</td><td>Preventivo + curativo con efecto retroactivo (sin horas en etiqueta)</td><td>100–150 cc/100L (curativo 150)</td><td>7 días</td><td>Sin dato en etiqueta; indica no aplicar si se prevén lluvias</td></tr>
+          <tr><td>Domark 40 EW</td><td>Tetraconazol</td><td>3 (DMI/triazol)</td><td>3</td><td>Sistémico y de contacto, preventivo y curativo (sin horas en etiqueta)</td><td>80 cc/100L</td><td>7–10 días</td><td>Sin dato en etiqueta</td></tr>
+          <tr><td>Topas 200 EW</td><td>Penconazol</td><td>3 (DMI/triazol)</td><td>4 (sumando otros del mismo grupo químico)</td><td>Sistémico, preventivo y curativo (hasta 96h post-infección)</td><td>10–15 cc/100L (mín. 200–300 cc/ha)</td><td>7–14 días</td><td>Alta — etiqueta indica rápida absorción, importante ante lluvias</td></tr>
+          <tr class="fila-tizon"><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>4 en primavera (6 invernales)</td><td>Contacto, preventivo. En peral: tizón de la flor, no venturia</td><td>60–120 g/100L (primavera)</td><td>7–10 días</td><td>Sin dato en etiqueta</td></tr>
+          <tr class="fila-tizon"><td>Hidro-Cup WG</td><td>Hidróxido de cobre</td><td>M1</td><td>4</td><td>Contacto, preventivo. En peral: tizón de la flor, no venturia. Russet en floración en Packham's</td><td>200–250 g/100L (otoño, yema hinchada); 30–50 g/100L en floración</td><td>Sin dato</td><td>Baja — etiqueta indica repetir después de una lluvia</td></tr>
+          <tr class="fila-tizon"><td>Cuprodul WG</td><td>Óxido cuproso</td><td>M1</td><td>4</td><td>Contacto. En peral: tizón bacteriano, no venturia. No sobrepasar dosis en Packham's</td><td>200–300 g/100L (otoño, yema hinchada); 50–100 g/100L en floración</td><td>10–15 días</td><td>Baja — etiqueta indica repetir después de una lluvia</td></tr>
+</tbody>
       </table>
     </div>
     <p class="descripcion" style="margin-top:16px;">
       <strong>Notas:</strong> Consul 65 WP y DODINE 65 WP comparten el mismo ingrediente activo (Dodina) — cuentan como el mismo grupo para efectos de rotación.
       Bonnus 400 SC tiene una carencia de solo 1 día, notablemente más corta que el resto de la tabla.
     </p>
+  </section>
+
+  <section class="bloque">
+    <h2>Programa de referencia FRUTEA 2026-27: fungicidas</h2>
+    <p class="descripcion">Fungicidas del programa fitosanitario de perales zona centro, en el orden en que se aplican. Las filas en magenta son obligatorias. Cuando el programa da dos alternativas para el mismo estado, aparecen como opción A y opción B. La columna de rotación cuenta aplicaciones seguidas con el mismo ingrediente activo en las aplicaciones de venturia.</p>
+    <div class="tabla-scroll">
+      <table class="tabla-alertas" id="tablaPrograma">
+        <thead>
+          <tr><th>#</th><th>Estado fenológico</th><th>Objetivo</th><th>Opción</th><th>Producto</th><th>Ingrediente(s) activo(s)</th><th>FRAC</th><th>Dosis/100 L</th><th>Carácter</th><th>Rotación venturia</th></tr>
+        </thead>
+        <tbody>
+          <tr class="prog-condicional"><td>1</td><td>Julio (pleno receso)</td><td>Escama San José, venturia</td><td>A</td><td>Polisulfuro de Calcio 350 SL</td><td>Polisulfuro de calcio</td><td>M2</td><td>5.000 cc (mín. 3%)</td><td><span class="badge-prog condicional">Obligatorio si hubo infección la temporada anterior</span></td><td>—</td></tr>
+          <tr class="prog-condicional"><td>1</td><td>Julio (pleno receso)</td><td>Escama San José, venturia</td><td>B</td><td>Polisul 35</td><td>Polisulfuro de calcio</td><td>M2</td><td>5.000 cc (mín. 3%)</td><td><span class="badge-prog condicional">Obligatorio si hubo infección la temporada anterior</span></td><td>—</td></tr>
+          <tr class="prog-obligatorio"><td>2</td><td>Yema hinchada</td><td>Tizón bacteriano</td><td>A</td><td>Cuprodul WG</td><td>Óxido cuproso</td><td>M1</td><td>300 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
+          <tr class="prog-obligatorio"><td>2</td><td>Yema hinchada</td><td>Tizón bacteriano</td><td>B</td><td>Hidro-Cup WG</td><td>Hidróxido de cobre</td><td>M1</td><td>250 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
+          <tr><td>3</td><td>Puntas verdes avanzadas</td><td>Venturia (con aceite + diazinon)</td><td>—</td><td>Domark 40 EW</td><td>Tetraconazol</td><td>3</td><td>80 cc</td><td><span class="badge-prog opcional">Opcional, si se hace control conjunto</span></td><td>Tetraconazol 1ª</td></tr>
+          <tr class="prog-obligatorio"><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Venturia</td><td>A</td><td>Consul 65 WP + T-Buzol 25 WP</td><td>Dodina + tebuconazol</td><td>M7 + 3</td><td>90 g + 40 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 1ª</td></tr>
+          <tr class="prog-obligatorio"><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Venturia</td><td>B</td><td>Mancozeb 80 WP + T-Buzol 25 WP</td><td>Mancozeb + tebuconazol</td><td>M3 + 3</td><td>240 g + 40 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 1ª</td></tr>
+          <tr><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td><span class="badge-prog opcional">Según humedad relativa o heladas</span></td><td>No cuenta (tizón)</td></tr>
+          <tr class="prog-obligatorio"><td>5</td><td>Ramillete expuesto a botón blanco</td><td>Venturia</td><td>—</td><td>Consist Full 75 WG</td><td>Trifloxistrobina + tebuconazol</td><td>11 + 3</td><td>20 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 2ª</td></tr>
+          <tr><td>5</td><td>Ramillete expuesto a botón blanco</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td><span class="badge-prog opcional">Según humedad relativa o heladas</span></td><td>No cuenta (tizón)</td></tr>
+          <tr class="prog-obligatorio"><td>6</td><td>Inicio de flores abiertas (20-30%)</td><td>Venturia, botritis, alternaria</td><td>—</td><td>Sercadis Duo</td><td>Fluxapiroxad + difenoconazol</td><td>7 + 3</td><td>80 cc</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Difenoconazol 1ª</td></tr>
+          <tr class="prog-obligatorio"><td>6</td><td>Inicio de flores abiertas (20-30%)</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
+          <tr class="prog-obligatorio"><td>7</td><td>Plena flor (80%)</td><td>Venturia, botritis, alternaria</td><td>—</td><td>Marcial SC</td><td>Pirimetanilo + difenoconazol</td><td>9 + 3</td><td>70 cc</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Difenoconazol 2ª</td></tr>
+          <tr class="prog-obligatorio"><td>7</td><td>Plena flor (80%)</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
+          <tr class="prog-obligatorio"><td>8</td><td>Caída de pétalos</td><td>Venturia, botritis, saprófitos</td><td>—</td><td>Miravis Duo</td><td>Pidiflumetofeno + difenoconazol</td><td>7 + 3</td><td>45 cc</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td><span class="badge rotacion_alerta">Difenoconazol 3ª seguida</span></td></tr>
+          <tr><td>9</td><td>Desde 7 días post caída de pétalos</td><td>Venturia, enfermedades lenticelares</td><td>—</td><td>Mancozeb 80 WP + Systhane 40 WP</td><td>Mancozeb + miclobutanil</td><td>M3 + 3</td><td>240 g + 10 g</td><td><span class="badge-prog opcional">Según condiciones de infección</span></td><td>Corta la racha de difenoconazol</td></tr>
+          <tr><td>10</td><td>Semana 5 (01/02)</td><td>Botritis y otros patógenos</td><td>—</td><td>Bonnus 400 SC</td><td>Pirimetanilo</td><td>9</td><td>70 cc</td><td><span class="badge-prog opcional">Según humedad relativa</span></td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
 </div>
@@ -898,6 +977,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script>
 /* =========================================================================
    VENTURIÓMETRO — dashboard de solo lectura
@@ -1352,16 +1432,30 @@ const CATALOGO_FUNGICIDAS = [
   { clave:'marcial',   nombre:'Marcial SC',             ventanaCurativaHoras:72,   resistenciaLavado:'desconocida' , ingredientes:['pirimetanilo', 'difenoconazol'] },
   { clave:'bonnus',    nombre:'Bonnus 400 SC',          ventanaCurativaHoras:72,   resistenciaLavado:'desconocida' , ingredientes:['pirimetanilo'] },
   { clave:'consist',   nombre:'Consist Full 75% WG',    ventanaCurativaHoras:null, resistenciaLavado:'desconocida' , ingredientes:['trifloxistrobina', 'tebuconazol'] },
-  { clave:'premiado',  nombre:'Premiado 250 EC',        ventanaCurativaHoras:100,  resistenciaLavado:'desconocida' , ingredientes:['difenoconazol'] }
+  { clave:'premiado',  nombre:'Premiado 250 EC',        ventanaCurativaHoras:100,  resistenciaLavado:'desconocida' , ingredientes:['difenoconazol'] },
+  { clave:'polisul',   nombre:'Polisulfuro de Calcio 350 SL', ventanaCurativaHoras:null, resistenciaLavado:'baja', ingredientes:['polisulfuro de calcio'] },
+  { clave:'syllit',    nombre:'Syllit 400 SC',          ventanaCurativaHoras:null, resistenciaLavado:'desconocida' , ingredientes:['dodina'] },
+  { clave:'domark',    alias:['dormak'], nombre:'Domark 40 EW', ventanaCurativaHoras:null, resistenciaLavado:'desconocida' , ingredientes:['tetraconazol'] },
+  { clave:'topas',     nombre:'Topas 200 EW',           ventanaCurativaHoras:96,   resistenciaLavado:'alta' , ingredientes:['penconazol'] },
+  // Cúpricos: en peral están registrados para tizón bacteriano, no para venturia.
+  // No cuentan como cobertura de venturia ni entran en la rotación de ingredientes.
+  { clave:'agroco',    nombre:'Agrocopper SP',          ventanaCurativaHoras:null, resistenciaLavado:'desconocida', ingredientes:['sulfato de cobre'], soloTizon:true },
+  { clave:'hidro',     nombre:'Hidro-Cup WG',           ventanaCurativaHoras:null, resistenciaLavado:'baja', ingredientes:['hidroxido de cobre'], soloTizon:true },
+  { clave:'cuprodul',  nombre:'Cuprodul WG',            ventanaCurativaHoras:null, resistenciaLavado:'baja', ingredientes:['oxido cuproso'], soloTizon:true }
 ];
 
 function normalizarTexto(s){
   return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 }
 
-function buscarTodosEnCatalogo(nombreProducto){
+// Todos los productos del catálogo que aparecen en el texto (incluye cúpricos).
+function buscarEnCatalogoCompleto(nombreProducto){
   const n = normalizarTexto(nombreProducto);
-  return CATALOGO_FUNGICIDAS.filter(p => n.includes(p.clave));
+  return CATALOGO_FUNGICIDAS.filter(p => [p.clave, ...(p.alias || [])].some(c => n.includes(c)));
+}
+// Solo los productos que controlan venturia (excluye los cúpricos para tizón).
+function buscarTodosEnCatalogo(nombreProducto){
+  return buscarEnCatalogoCompleto(nombreProducto).filter(p => !p.soloTizon);
 }
 
 // Busca, antes de un momento dado, TODOS los bloques continuos de mojado
@@ -1450,6 +1544,7 @@ function marcarRotacion(aplicacionesProductor){
     const ings = ingredientesDe(a.producto);
     a.ingredientes = ings;
     a.rotacion = [];
+    a.soloTizon = !ings.length && buscarEnCatalogoCompleto(a.producto).length > 0;
     if(!ings.length) continue; // producto no reconocido: no corta ni suma rachas
     for(const k of Object.keys(racha)) if(!ings.includes(k)) racha[k] = 0;
     for(const i of ings) racha[i] = (racha[i] || 0) + 1;
@@ -1487,6 +1582,10 @@ function diagnosticarAplicacion(fechaAplicacion, nombreProducto, serie){
   const horasTexto = horasDesdeInicio >= 0 ? `${horasDesdeInicio.toFixed(0)} h después` : `${Math.abs(horasDesdeInicio).toFixed(0)} h antes`;
   const horasTextoSinSufijo = Math.abs(horasDesdeInicio).toFixed(0);
 
+  if(!productos.length && buscarEnCatalogoCompleto(nombreProducto).length){
+    return { estado:'sin_evento', eventoTexto, horasTexto,
+      motivo: 'Producto cúprico: en peral está registrado para tizón bacteriano, no para venturia, así que no se evalúa como cobertura de venturia.' };
+  }
   if(!productos.length){
     return { estado:'sin_evento', eventoTexto, horasTexto,
       motivo: 'Ningún producto del texto ingresado coincide con el catálogo — no se pudo evaluar la ventana curativa. Revisa que el nombre escrito coincida con el de la ficha técnica (o escribe el nombre completo, ej. "Bonnus 400 SC").' };
@@ -1532,12 +1631,15 @@ async function cargarAplicaciones(){
       const d = doc.data();
       const fecha = new Date(d.fecha);
       aplicaciones.push({ fecha, producto: d.producto, dosis: d.dosis, aplicadoPor: d.aplicadoPor });
+      APLICACIONES_POR_ID[doc.id] = { fecha, producto: d.producto, dosis: d.dosis, aplicadoPor: d.aplicadoPor };
       const tr = document.createElement('tr');
+      if(doc.id === edicionId) tr.className = 'en-edicion';
       tr.innerHTML = `
         <td>${fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</td>
         <td>${d.producto || '—'}</td>
         <td>${d.dosis || '—'}</td>
         <td>${d.aplicadoPor || '—'}</td>
+        ${usuarioAdmin ? `<td class="col-acciones"><button class="btn-tabla" data-accion="editar" data-id="${doc.id}">Editar</button><button class="btn-tabla eliminar" data-accion="eliminar" data-id="${doc.id}">Eliminar</button></td>` : ''}
       `;
       cuerpo.appendChild(tr);
     });
@@ -1600,29 +1702,125 @@ document.getElementById('btnGuardarAplicacion').addEventListener('click', async 
   mensaje.textContent = 'Guardando…';
 
   try{
-    await db.collection('venturiometro_aplicaciones').add({
+    const datos = {
       fecha: new Date(fechaVal).toISOString(),
       producto,
       dosis: dosis || null,
-      aplicadoPor: productorValido,
-      registradoEl: new Date().toISOString()
-    });
-    mensaje.textContent = 'Aplicación guardada ✓';
-    document.getElementById('aplFecha').value = '';
-    document.getElementById('aplProducto').value = '';
-    document.getElementById('aplDosis').value = '';
-    document.getElementById('aplPersona').value = '';
+      aplicadoPor: productorValido
+    };
+    if(edicionId){
+      await db.collection('venturiometro_aplicaciones').doc(edicionId).update({ ...datos, editadoEl: new Date().toISOString() });
+      mensaje.textContent = 'Cambios guardados ✓';
+    } else {
+      await db.collection('venturiometro_aplicaciones').add({ ...datos, registradoEl: new Date().toISOString() });
+      mensaje.textContent = 'Aplicación guardada ✓';
+    }
+    limpiarFormularioAplicacion();
+    fenologiaCargada = false;
     cargarAplicaciones();
   } catch(err){
     console.error(err);
     mensaje.style.color = '#B23A2E';
-    mensaje.textContent = 'No se pudo guardar. Revisa la consola (F12).';
+    mensaje.textContent = err && err.code === 'permission-denied'
+      ? 'Tu cuenta no tiene permiso para modificar el registro.'
+      : 'No se pudo guardar. Revisa la consola (F12).';
   } finally {
     boton.disabled = false;
   }
 });
 
-cargarAplicaciones();
+// --- acceso de administrador y edición del registro ---
+const auth = firebase.auth();
+let usuarioAdmin = null;
+let edicionId = null;
+const APLICACIONES_POR_ID = {};
+
+function limpiarFormularioAplicacion(){
+  edicionId = null;
+  ['aplFecha','aplProducto','aplDosis','aplPersona'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('btnGuardarAplicacion').textContent = 'Guardar';
+  document.getElementById('campoCancelar').style.display = 'none';
+  document.querySelectorAll('#cuerpoTablaAplicaciones tr.en-edicion').forEach(tr => tr.classList.remove('en-edicion'));
+}
+
+function actualizarAcceso(){
+  const conSesion = !!usuarioAdmin;
+  document.getElementById('accesoSinSesion').style.display = conSesion ? 'none' : '';
+  document.getElementById('accesoConSesion').style.display = conSesion ? '' : 'none';
+  document.getElementById('zonaEdicion').style.display = conSesion ? '' : 'none';
+  document.querySelectorAll('th.col-acciones').forEach(th => th.style.display = conSesion ? '' : 'none');
+  document.getElementById('usuarioActual').textContent = conSesion ? usuarioAdmin.email : '';
+  if(!conSesion) limpiarFormularioAplicacion();
+}
+
+auth.onAuthStateChanged(user => {
+  usuarioAdmin = user;
+  actualizarAcceso();
+  cargarAplicaciones();
+});
+
+document.getElementById('btnLogin').addEventListener('click', async () => {
+  const msg = document.getElementById('loginMensaje');
+  const correo = document.getElementById('loginCorreo').value.trim();
+  const clave = document.getElementById('loginClave').value;
+  if(!correo || !clave){ msg.style.color = '#B23A2E'; msg.textContent = 'Ingresa tu correo y contraseña.'; return; }
+  msg.style.color = '#4d6321'; msg.textContent = 'Iniciando sesión…';
+  try{
+    await auth.signInWithEmailAndPassword(correo, clave);
+    msg.textContent = '';
+    document.getElementById('loginClave').value = '';
+  } catch(err){
+    console.error(err);
+    msg.style.color = '#B23A2E';
+    msg.textContent = 'Correo o contraseña incorrectos.';
+  }
+});
+document.getElementById('loginClave').addEventListener('keydown', e => { if(e.key === 'Enter') document.getElementById('btnLogin').click(); });
+document.getElementById('btnLogout').addEventListener('click', () => auth.signOut());
+document.getElementById('btnCancelarEdicion').addEventListener('click', () => {
+  limpiarFormularioAplicacion();
+  document.getElementById('aplMensaje').textContent = '';
+});
+
+document.getElementById('cuerpoTablaAplicaciones').addEventListener('click', async e => {
+  const btn = e.target.closest('button[data-accion]');
+  if(!btn || !usuarioAdmin) return;
+  const id = btn.dataset.id;
+  const a = APLICACIONES_POR_ID[id];
+  if(!a) return;
+  const mensaje = document.getElementById('aplMensaje');
+  if(btn.dataset.accion === 'editar'){
+    edicionId = id;
+    document.getElementById('aplFecha').value = formatearFechaISO(a.fecha);
+    document.getElementById('aplProducto').value = a.producto || '';
+    document.getElementById('aplDosis').value = a.dosis || '';
+    document.getElementById('aplPersona').value = a.aplicadoPor || '';
+    document.getElementById('btnGuardarAplicacion').textContent = 'Guardar cambios';
+    document.getElementById('campoCancelar').style.display = '';
+    document.querySelectorAll('#cuerpoTablaAplicaciones tr.en-edicion').forEach(tr => tr.classList.remove('en-edicion'));
+    btn.closest('tr').classList.add('en-edicion');
+    mensaje.style.color = '#4d6321';
+    mensaje.textContent = 'Editando la aplicación seleccionada. Modifica los campos y presiona "Guardar cambios".';
+    document.getElementById('zonaEdicion').scrollIntoView({ behavior:'smooth', block:'center' });
+  } else if(btn.dataset.accion === 'eliminar'){
+    const fechaTxt = a.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    if(!confirm(`¿Eliminar la aplicación de ${a.producto || 'producto sin nombre'} (${a.aplicadoPor || 'sin productor'}) del ${fechaTxt}? Esta acción no se puede deshacer.`)) return;
+    try{
+      await db.collection('venturiometro_aplicaciones').doc(id).delete();
+      if(edicionId === id) limpiarFormularioAplicacion();
+      mensaje.style.color = '#4d6321';
+      mensaje.textContent = 'Aplicación eliminada.';
+      fenologiaCargada = false;
+      cargarAplicaciones();
+    } catch(err){
+      console.error(err);
+      mensaje.style.color = '#B23A2E';
+      mensaje.textContent = err && err.code === 'permission-denied'
+        ? 'Tu cuenta no tiene permiso para eliminar aplicaciones.'
+        : 'No se pudo eliminar. Revisa la consola (F12).';
+    }
+  }
+});
 
 // carga inicial: últimos 30 días
 document.querySelector('.rango-atajos button[data-dias="30"]').click();
@@ -1921,7 +2119,8 @@ function renderTablaRotacion(aplicaciones, conProductor){
   }
   cuerpo.innerHTML = [...aplicaciones].sort((a, b) => b.fecha - a.fecha).map(a => {
     let badge;
-    if(!a.ingredientes || !a.ingredientes.length) badge = '<span class="badge sin_catalogo">Producto no reconocido</span>';
+    if(a.soloTizon) badge = '<span class="badge sin_catalogo">Cúprico: solo tizón</span>';
+    else if(!a.ingredientes || !a.ingredientes.length) badge = '<span class="badge sin_catalogo">Producto no reconocido</span>';
     else if(a.rotacion.length) badge = `<span class="badge rotacion_alerta" title="${textoRotacion(a)}">${Math.max(...a.rotacion.map(i => a.racha[i]))}ª seguida: ${a.rotacion.join(', ')}</span>`;
     else badge = '<span class="badge rotacion_ok">Rotación OK</span>';
     const ings = (a.ingredientes || []).map(i => `${i}${a.racha && a.racha[i] > 1 ? ` (${a.racha[i]}ª)` : ''}`).join(' + ') || '—';
