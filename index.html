@@ -361,6 +361,12 @@
   .filtros-aplicaciones .campo-botones{ flex-direction:row; gap:8px; }
   .btn-exportar{ background:var(--magenta-frutea); color:#fff; border:none; border-radius:4px; padding:8px 14px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.85rem; }
   .btn-exportar:hover{ filter:brightness(0.92); }
+  .importar-lecturas{ border-top:1px solid var(--linea); margin-top:16px; padding-top:12px; }
+  .importar-lecturas h4{ font-family:'Fraunces',serif; font-size:0.95rem; margin:0 0 4px; color:var(--verde-huerto); }
+  .importar-lecturas p{ font-size:0.8rem; color:#555; margin:0 0 8px; max-width:90ch; }
+  .importar-fila{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .importar-fila input[type=file]{ font-family:'Inter',sans-serif; font-size:0.85rem; }
+  .btn-exportar:disabled{ background:#c9a3b8; cursor:not-allowed; }
   .contador-filtro{ font-size:0.8rem; color:#555; width:100%; }
   .acceso-admin{ border-bottom:1px solid var(--linea); padding-bottom:12px; margin-bottom:14px; }
   .acceso-admin > div{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
@@ -749,6 +755,16 @@
         </div>
       </div>
       <div id="aplMensaje" style="font-size:0.8rem; margin-top:8px;"></div>
+
+      <div class="importar-lecturas">
+        <h4>Importar lecturas históricas de la estación</h4>
+        <p>Sirve para rellenar días sin datos (por ejemplo, si n8n dejó de correr). Descarga en Agroclima los <em>Datos históricos</em> de Placilla Chacarilla en Excel y súbelo aquí. Las horas sin datos ("--") se omiten. Si una lectura ya existe, se reemplaza.</p>
+        <div class="importar-fila">
+          <input type="file" id="archivoLecturas" accept=".xlsx">
+          <button id="btnCargarLecturas" class="btn-exportar" disabled>Cargar a la base de datos</button>
+        </div>
+        <div id="importarMensaje" style="font-size:0.8rem; margin-top:8px;"></div>
+      </div>
       </div>
     </div>
 
@@ -1779,6 +1795,107 @@ document.getElementById('filtroProductor').innerHTML = '<option value="">Todos</
 document.getElementById('btnLimpiarFiltros').addEventListener('click', () => {
   ['filtroProductor','filtroProducto','filtroDesde','filtroHasta'].forEach(id => document.getElementById(id).value = '');
   renderRegistroAplicaciones();
+});
+
+// --- importar lecturas históricas desde el Excel de Agroclima ---
+// Mismo cálculo que el nodo de n8n: punto de rocío (Magnus) y hoja mojada si HR ≥ 90%,
+// depresión del punto de rocío ≤ 1 °C o lluvia > 0. Las lecturas horarias se marcan con
+// horasHumectacion = 1; el dashboard calcula la duración real por la diferencia entre lecturas.
+const ESTACION_ID = '340025';
+let LECTURAS_A_IMPORTAR = [];
+
+function limpiarCeldaAgroclima(v){
+  if(v == null) return '';
+  if(typeof v === 'object' && v.richText) v = v.richText.map(t => t.text).join('');
+  return String(v).replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+}
+function numeroAgroclima(v){
+  const t = limpiarCeldaAgroclima(v);
+  if(!t || t === '--') return null;
+  const n = parseFloat(t.replace(',', '.'));
+  return isNaN(n) ? null : n;
+}
+
+async function leerExcelAgroclima(archivo){
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(await archivo.arrayBuffer());
+  const ws = wb.worksheets[0];
+  const enc = ws.getRow(1).values.map(limpiarCeldaAgroclima);
+  const col = nombre => enc.findIndex(h => normalizarTexto(h) === normalizarTexto(nombre));
+  const cFecha = col('Fecha Hora'), cTemp = col('Temp. promedio aire'), cLluvia = col('Precipitación horaria'), cHR = col('Humed. rel. promedio');
+  if([cFecha, cTemp, cLluvia, cHR].some(c => c < 1)) throw new Error('El archivo no tiene las columnas esperadas de Agroclima (Fecha Hora, Temp. promedio aire, Precipitación horaria, Humed. rel. promedio).');
+  const a = 17.27, b = 237.7;
+  const lecturas = []; let omitidas = 0;
+  ws.eachRow((row, i) => {
+    if(i === 1) return;
+    const fechaTxt = limpiarCeldaAgroclima(row.getCell(cFecha).value);
+    const m = fechaTxt.match(/^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2})$/);
+    const T = numeroAgroclima(row.getCell(cTemp).value);
+    const HR = numeroAgroclima(row.getCell(cHR).value);
+    const lluvia = numeroAgroclima(row.getCell(cLluvia).value) || 0;
+    if(!m || T === null || HR === null || HR <= 0){ omitidas++; return; }
+    const fechaISO = `${m[3]}-${m[2]}-${m[1]}T${m[4]}:${m[5]}`;
+    const alpha = (a * T) / (b + T) + Math.log(HR / 100);
+    const puntoRocio = (b * alpha) / (a - alpha);
+    const mojada = HR >= 90 || (T - puntoRocio) <= 1 || lluvia > 0;
+    lecturas.push({
+      docId: `${ESTACION_ID}_${fechaISO}`,
+      datos: { estacionId: ESTACION_ID, fechaHora: fechaISO, temperaturaC: T, humedadRelativa: HR, lluvia,
+               puntoRocioC: Math.round(puntoRocio * 10) / 10, horasHumectacion: mojada ? 1 : 0 }
+    });
+  });
+  return { lecturas, omitidas };
+}
+
+document.getElementById('archivoLecturas').addEventListener('change', async e => {
+  const msg = document.getElementById('importarMensaje');
+  const btn = document.getElementById('btnCargarLecturas');
+  btn.disabled = true; LECTURAS_A_IMPORTAR = [];
+  const archivo = e.target.files[0];
+  if(!archivo) { msg.textContent = ''; return; }
+  msg.style.color = '#4d6321'; msg.textContent = 'Leyendo archivo…';
+  try{
+    const { lecturas, omitidas } = await leerExcelAgroclima(archivo);
+    if(!lecturas.length){ msg.style.color = '#B23A2E'; msg.textContent = 'El archivo no tiene lecturas con datos.'; return; }
+    LECTURAS_A_IMPORTAR = lecturas;
+    const mojadas = lecturas.filter(l => l.datos.horasHumectacion > 0).length;
+    const lluvia = lecturas.reduce((s, l) => s + l.datos.lluvia, 0);
+    const f = t => t.replace('T', ' ');
+    msg.innerHTML = `<strong>${lecturas.length} lecturas</strong> entre ${f(lecturas[0].datos.fechaHora)} y ${f(lecturas[lecturas.length-1].datos.fechaHora)} · ${mojadas} con hoja mojada · ${lluvia.toFixed(1)} mm de lluvia` +
+      (omitidas ? ` · ${omitidas} horas sin datos se omiten` : '') + '. Revisa y presiona "Cargar a la base de datos".';
+    btn.disabled = false;
+  } catch(err){
+    console.error(err);
+    msg.style.color = '#B23A2E'; msg.textContent = 'No se pudo leer el archivo: ' + err.message;
+  }
+});
+
+document.getElementById('btnCargarLecturas').addEventListener('click', async () => {
+  const msg = document.getElementById('importarMensaje');
+  const btn = document.getElementById('btnCargarLecturas');
+  if(!LECTURAS_A_IMPORTAR.length) return;
+  if(!confirm(`Se cargarán ${LECTURAS_A_IMPORTAR.length} lecturas en la base de datos. Las que ya existan con la misma fecha y hora se reemplazan. ¿Continuar?`)) return;
+  btn.disabled = true;
+  try{
+    for(let i = 0; i < LECTURAS_A_IMPORTAR.length; i += 400){
+      const lote = db.batch();
+      LECTURAS_A_IMPORTAR.slice(i, i + 400).forEach(l => lote.set(db.collection('venturiometro_lecturas').doc(l.docId), l.datos));
+      await lote.commit();
+      msg.style.color = '#4d6321';
+      msg.textContent = `Cargando… ${Math.min(i + 400, LECTURAS_A_IMPORTAR.length)} de ${LECTURAS_A_IMPORTAR.length}`;
+    }
+    msg.textContent = `Listo: ${LECTURAS_A_IMPORTAR.length} lecturas cargadas. Recarga la página para ver los datos actualizados.`;
+    LECTURAS_A_IMPORTAR = [];
+    document.getElementById('archivoLecturas').value = '';
+    fenologiaCargada = false;
+  } catch(err){
+    console.error(err);
+    msg.style.color = '#B23A2E';
+    msg.textContent = err && err.code === 'permission-denied'
+      ? 'Firestore rechazó la escritura: revisa que las reglas permitan escribir en venturiometro_lecturas.'
+      : 'No se pudieron cargar las lecturas. Revisa la consola (F12).';
+    btn.disabled = false;
+  }
 });
 
 // --- exportar a Excel (mismo formato que el Cuaderno de Dardos) ---
