@@ -2,8 +2,16 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Venturiómetro — Frutea</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1F3B2C">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Venturiómetro">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -371,6 +379,9 @@
   .fila-productor{ display:flex; align-items:center; gap:8px; }
   .fila-productor span{ font-size:0.8rem; font-weight:600; min-width:82px; color:var(--verde-huerto); }
   .fila-productor input{ flex:1; font-family:'Inter',sans-serif; font-size:0.85rem; padding:6px 9px; border:1px solid var(--linea); border-radius:4px; }
+  .aviso-instalar{ position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); z-index:50; display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--linea); border-left:4px solid var(--magenta-frutea); border-radius:8px; padding:10px 12px; box-shadow:0 6px 20px rgba(0,0,0,0.18); font-size:0.85rem; max-width:560px; margin:0 auto; }
+  .aviso-instalar span{ flex:1; }
+  .btn-cerrar-aviso{ background:none; border:none; font-size:1.3rem; line-height:1; cursor:pointer; color:#777; padding:0 4px; }
   .contador-filtro{ font-size:0.8rem; color:#555; width:100%; }
   .acceso-admin{ border-bottom:1px solid var(--linea); padding-bottom:12px; margin-bottom:14px; }
   .acceso-admin > div{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
@@ -2705,5 +2716,43 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
 });
 </script>
 
+<div id="avisoInstalar" class="aviso-instalar" style="display:none;">
+  <span id="avisoInstalarTexto">Instala el Venturiómetro en tu teléfono para abrirlo como una app.</span>
+  <button id="btnInstalar" class="btn-exportar">Instalar</button>
+  <button id="btnCerrarAviso" class="btn-cerrar-aviso" aria-label="Cerrar">×</button>
+</div>
+<script>
+// --- app instalable (PWA) ---
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(err => console.warn('Service worker no registrado', err)));
+}
+(function(){
+  const aviso = document.getElementById('avisoInstalar');
+  const yaInstalada = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  let cerrado = false;
+  try{ cerrado = localStorage.getItem('avisoInstalarCerrado') === '1'; }catch(e){}
+  if(yaInstalada || cerrado) return;
+  let promptInstalar = null;
+  // Android / Chrome: botón de instalación directa
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); promptInstalar = e; aviso.style.display = 'flex';
+  });
+  document.getElementById('btnInstalar').addEventListener('click', async () => {
+    if(!promptInstalar) return;
+    promptInstalar.prompt(); await promptInstalar.userChoice; promptInstalar = null; aviso.style.display = 'none';
+  });
+  // iPhone / iPad (Safari): no hay botón automático, se explica el paso
+  const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if(esIOS){
+    document.getElementById('avisoInstalarTexto').innerHTML = 'Para instalarlo: toca <strong>Compartir</strong> (el cuadrado con flecha) y luego <strong>"Agregar a inicio"</strong>.';
+    document.getElementById('btnInstalar').style.display = 'none';
+    aviso.style.display = 'flex';
+  }
+  document.getElementById('btnCerrarAviso').addEventListener('click', () => {
+    aviso.style.display = 'none';
+    try{ localStorage.setItem('avisoInstalarCerrado', '1'); }catch(e){}
+  });
+})();
+</script>
 </body>
 </html>
