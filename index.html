@@ -382,6 +382,28 @@
   .aviso-instalar{ position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); z-index:50; display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--linea); border-left:4px solid var(--magenta-frutea); border-radius:8px; padding:10px 12px; box-shadow:0 6px 20px rgba(0,0,0,0.18); font-size:0.85rem; max-width:560px; margin:0 auto; }
   .aviso-instalar span{ flex:1; }
   .btn-cerrar-aviso{ background:none; border:none; font-size:1.3rem; line-height:1; cursor:pointer; color:#777; padding:0 4px; }
+  .plan-reglas{ display:grid; gap:6px; margin:6px 0 10px; font-size:0.85rem; }
+  .plan-reglas > div{ background:#fff; border:1px solid var(--linea); border-radius:6px; padding:8px 12px; }
+  .chip-grupo{ display:inline-block; font-size:0.72rem; font-weight:700; padding:2px 9px; border-radius:10px; margin-right:6px; }
+  .chip-grupo.carbox{ background:#FFF3B0; color:#7a5d00; border:1px solid #E8C400; }
+  .chip-grupo.rotacion{ background:#DDF0C8; color:#3d6b12; border:1px solid #92D050; }
+  .plan-base{ font-size:0.85rem; margin-bottom:10px; background:#fff; border-left:4px solid var(--magenta-frutea); border-radius:0 6px 6px 0; padding:8px 12px; }
+  .plan-opcion{ background:#fff; border:1px solid var(--linea); border-radius:8px; margin-bottom:10px; overflow:hidden; }
+  .plan-opcion > summary{ cursor:pointer; list-style:none; padding:12px 14px; font-weight:600; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .plan-opcion > summary::-webkit-details-marker{ display:none; }
+  .plan-opcion > summary::before{ content:'▸'; color:var(--magenta-frutea); font-size:1.1rem; transition:transform .15s; }
+  .plan-opcion[open] > summary::before{ transform:rotate(90deg); }
+  .plan-opcion > summary .resumen{ font-weight:400; font-size:0.8rem; color:#666; }
+  .plan-opcion .cuerpo{ padding:0 14px 14px; }
+  .plan-alternativa{ margin-top:10px; }
+  .plan-alternativa h4{ font-family:'Fraunces',serif; font-size:0.95rem; margin:8px 0 6px; color:var(--verde-huerto); }
+  .plan-secuencia{ display:flex; flex-wrap:wrap; align-items:center; gap:4px; margin-bottom:8px; font-size:0.8rem; }
+  .plan-secuencia .paso{ padding:3px 8px; border-radius:10px; font-weight:600; }
+  .plan-secuencia .paso.carbox{ background:#FFF3B0; color:#7a5d00; }
+  .plan-secuencia .paso.rotacion{ background:#DDF0C8; color:#3d6b12; }
+  .plan-tabla td.tipo-carbox{ border-left:4px solid #E8C400; }
+  .plan-tabla td.tipo-rotacion{ border-left:4px solid #92D050; }
+  .plan-nota{ font-size:0.8rem; color:#555; background:#f7f7f2; border-radius:6px; padding:8px 10px; margin-top:6px; }
   .contador-filtro{ font-size:0.8rem; color:#555; width:100%; }
   .acceso-admin{ border-bottom:1px solid var(--linea); padding-bottom:12px; margin-bottom:14px; }
   .acceso-admin > div{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
@@ -961,6 +983,7 @@
                   <tr><td>Polisulfuro de Calcio 350 SL</td><td>Polisulfuro de calcio</td><td>M2</td><td>4</td><td>Contacto, preventivo y curativo (sin horas en etiqueta). Solo en pleno receso</td><td>3–5 L/100L</td><td>Solo receso (caída de hojas a antes de yema rosada)</td><td>Baja — etiqueta indica repetir si llueve hasta 3 días después</td></tr>
           <tr><td>Syllit 400 SC</td><td>Dodina (mismo activo que Consul y Dodine)</td><td>M7</td><td>4 (preventivas + curativas)</td><td>Preventivo + curativo con efecto retroactivo (sin horas en etiqueta)</td><td>100–150 cc/100L (curativo 150)</td><td>7 días</td><td>Sin dato en etiqueta; indica no aplicar si se prevén lluvias</td></tr>
           <tr><td>Domark 40 EW</td><td>Tetraconazol</td><td>3 (DMI/triazol)</td><td>3</td><td>Sistémico y de contacto, preventivo y curativo (sin horas en etiqueta)</td><td>80 cc/100L</td><td>7–10 días</td><td>Sin dato en etiqueta</td></tr>
+          <tr><td>Reflect Top</td><td>Isopirazam + difenoconazol</td><td>7 + 3</td><td>2 no secuenciales</td><td>Preventivo. Se usa contra venturia por recomendación del asesor; su etiqueta registra venturia solo en manzano (en peral: oídio, pudrición calicinal y corazón mohoso)</td><td>75–100 cc/100L (oídio); 100 cc/100L (botritis, alternaria)</td><td>7–14 días</td><td>Sin dato en etiqueta</td></tr>
           <tr><td>Candado 200 EW</td><td>Penconazol (mismo activo que Topas)</td><td>3 (DMI/triazol)</td><td>2</td><td>Sistémico, preventivo y curativo (hasta 96h post-infección)</td><td>10–15 cc/100L (mín. 200–300 cc/ha)</td><td>10–15 días</td><td>Sin dato en etiqueta; indica aplicar sin agua libre en el follaje y no aplicar con lluvias inminentes</td></tr>
           <tr><td>Topas 200 EW</td><td>Penconazol</td><td>3 (DMI/triazol)</td><td>4 (sumando otros del mismo grupo químico)</td><td>Sistémico, preventivo y curativo (hasta 96h post-infección)</td><td>10–15 cc/100L (mín. 200–300 cc/ha)</td><td>7–14 días</td><td>Alta — etiqueta indica rápida absorción, importante ante lluvias</td></tr>
           <tr class="fila-tizon"><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>4 en primavera (6 invernales)</td><td>Contacto, preventivo. En peral: tizón de la flor, no venturia</td><td>60–120 g/100L (primavera)</td><td>7–10 días</td><td>Sin dato en etiqueta</td></tr>
@@ -977,33 +1000,44 @@
 
   <section class="bloque">
     <h2>Programa de referencia FRUTEA 2026-27: fungicidas</h2>
-    <p class="descripcion">Fungicidas del programa fitosanitario de perales zona centro, en el orden en que se aplican. Las filas en magenta son obligatorias. Cuando el programa da dos alternativas para el mismo estado, aparecen como opción A y opción B. La columna de rotación cuenta aplicaciones seguidas con el mismo ingrediente activo en las aplicaciones de venturia.</p>
+    <p class="descripcion">Fungicidas del programa fitosanitario de perales zona centro, en el orden en que se aplican. Las filas en magenta son obligatorias; las de borde punteado son obligatorias cuando se dan las condiciones indicadas. Cuando el programa da dos alternativas para el mismo estado, aparecen como opción A y opción B. La columna de rotación cuenta aplicaciones seguidas con el mismo ingrediente activo en las aplicaciones de venturia.</p>
     <div class="tabla-scroll">
       <table class="tabla-alertas" id="tablaPrograma">
         <thead>
-          <tr><th>#</th><th>Estado fenológico</th><th>Objetivo</th><th>Opción</th><th>Producto</th><th>Ingrediente(s) activo(s)</th><th>FRAC</th><th>Dosis/100 L</th><th>Carácter</th><th>Rotación venturia</th></tr>
+          <tr><th>#</th><th>Estado fenológico</th><th>Objetivo</th><th>Opción</th><th>Producto</th><th>Ingrediente(s) activo(s)</th><th>FRAC</th><th>Dosis/100 L</th><th>Mojamiento (L/ha)</th><th>Total producto/ha</th><th>Carácter</th><th>Rotación venturia</th></tr>
         </thead>
         <tbody>
-          <tr class="prog-condicional"><td>1</td><td>Julio (pleno receso)</td><td>Escama San José, venturia</td><td>A</td><td>Polisulfuro de Calcio 350 SL</td><td>Polisulfuro de calcio</td><td>M2</td><td>5.000 cc (mín. 3%)</td><td><span class="badge-prog condicional">Obligatorio si hubo infección la temporada anterior</span></td><td>—</td></tr>
-          <tr class="prog-condicional"><td>1</td><td>Julio (pleno receso)</td><td>Escama San José, venturia</td><td>B</td><td>Polisul 35</td><td>Polisulfuro de calcio</td><td>M2</td><td>5.000 cc (mín. 3%)</td><td><span class="badge-prog condicional">Obligatorio si hubo infección la temporada anterior</span></td><td>—</td></tr>
-          <tr class="prog-obligatorio"><td>2</td><td>Yema hinchada</td><td>Tizón bacteriano</td><td>A</td><td>Cuprodul WG</td><td>Óxido cuproso</td><td>M1</td><td>300 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
-          <tr class="prog-obligatorio"><td>2</td><td>Yema hinchada</td><td>Tizón bacteriano</td><td>B</td><td>Hidro-Cup WG</td><td>Hidróxido de cobre</td><td>M1</td><td>250 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
-          <tr><td>3</td><td>Puntas verdes avanzadas</td><td>Venturia (con aceite + diazinon)</td><td>—</td><td>Domark 40 EW</td><td>Tetraconazol</td><td>3</td><td>80 cc</td><td><span class="badge-prog opcional">Opcional, si se hace control conjunto</span></td><td>Tetraconazol 1ª</td></tr>
-          <tr class="prog-obligatorio"><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Venturia</td><td>A</td><td>Consul 65 WP + T-Buzol 25 WP</td><td>Dodina + tebuconazol</td><td>M7 + 3</td><td>90 g + 40 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 1ª</td></tr>
-          <tr class="prog-obligatorio"><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Venturia</td><td>B</td><td>Mancozeb 80 WP + T-Buzol 25 WP</td><td>Mancozeb + tebuconazol</td><td>M3 + 3</td><td>240 g + 40 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 1ª</td></tr>
-          <tr><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td><span class="badge-prog opcional">Según humedad relativa o heladas</span></td><td>No cuenta (tizón)</td></tr>
-          <tr class="prog-obligatorio"><td>5</td><td>Ramillete expuesto a botón blanco</td><td>Venturia</td><td>—</td><td>Consist Full 75 WG</td><td>Trifloxistrobina + tebuconazol</td><td>11 + 3</td><td>20 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 2ª</td></tr>
-          <tr><td>5</td><td>Ramillete expuesto a botón blanco</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td><span class="badge-prog opcional">Según humedad relativa o heladas</span></td><td>No cuenta (tizón)</td></tr>
-          <tr class="prog-obligatorio"><td>6</td><td>Inicio de flores abiertas (20-30%)</td><td>Venturia, botritis, alternaria</td><td>—</td><td>Sercadis Duo</td><td>Fluxapiroxad + difenoconazol</td><td>7 + 3</td><td>80 cc</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Difenoconazol 1ª</td></tr>
-          <tr class="prog-obligatorio"><td>6</td><td>Inicio de flores abiertas (20-30%)</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
-          <tr class="prog-obligatorio"><td>7</td><td>Plena flor (80%)</td><td>Venturia, botritis, alternaria</td><td>—</td><td>Marcial SC</td><td>Pirimetanilo + difenoconazol</td><td>9 + 3</td><td>70 cc</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Difenoconazol 2ª</td></tr>
-          <tr class="prog-obligatorio"><td>7</td><td>Plena flor (80%)</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
-          <tr class="prog-obligatorio"><td>8</td><td>Caída de pétalos</td><td>Venturia, botritis, saprófitos</td><td>—</td><td>Miravis Duo</td><td>Pidiflumetofeno + difenoconazol</td><td>7 + 3</td><td>45 cc</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td><span class="badge rotacion_alerta">Difenoconazol 3ª seguida</span></td></tr>
-          <tr><td>9</td><td>Desde 7 días post caída de pétalos</td><td>Venturia, enfermedades lenticelares</td><td>—</td><td>Mancozeb 80 WP + Systhane 40 WP</td><td>Mancozeb + miclobutanil</td><td>M3 + 3</td><td>240 g + 10 g</td><td><span class="badge-prog opcional">Según condiciones de infección</span></td><td>Corta la racha de difenoconazol</td></tr>
-          <tr><td>10</td><td>Semana 5 (01/02)</td><td>Botritis y otros patógenos</td><td>—</td><td>Bonnus 400 SC</td><td>Pirimetanilo</td><td>9</td><td>70 cc</td><td><span class="badge-prog opcional">Según humedad relativa</span></td><td>—</td></tr>
+          <tr class="prog-condicional"><td>1</td><td>Julio (pleno receso)</td><td>Escama San José, venturia</td><td>A</td><td>Polisulfuro de Calcio 350 SL</td><td>Polisulfuro de calcio</td><td>M2</td><td>5.000 cc (mín. 3%)</td><td>1.500</td><td>75,0</td><td><span class="badge-prog condicional">Obligatorio si hubo infección la temporada anterior</span></td><td>—</td></tr>
+          <tr class="prog-condicional"><td>1</td><td>Julio (pleno receso)</td><td>Escama San José, venturia</td><td>B</td><td>Polisul 35</td><td>Polisulfuro de calcio</td><td>M2</td><td>5.000 cc (mín. 3%)</td><td>1.500</td><td>75,0</td><td><span class="badge-prog condicional">Obligatorio si hubo infección la temporada anterior</span></td><td>—</td></tr>
+          <tr class="prog-obligatorio"><td>2</td><td>Yema hinchada</td><td>Tizón bacteriano</td><td>A</td><td>Cuprodul WG</td><td>Óxido cuproso</td><td>M1</td><td>300 g</td><td>1.000</td><td>3,0</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
+          <tr class="prog-obligatorio"><td>2</td><td>Yema hinchada</td><td>Tizón bacteriano</td><td>B</td><td>Hidro-Cup WG</td><td>Hidróxido de cobre</td><td>M1</td><td>250 g</td><td>1.000</td><td>2,5</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
+          <tr><td>3</td><td>Puntas verdes avanzadas</td><td>Venturia (con aceite + diazinon)</td><td>—</td><td>Domark 40 EW</td><td>Tetraconazol</td><td>3</td><td>80 cc</td><td>1.500</td><td>—</td><td><span class="badge-prog opcional">Opcional, si se hace control conjunto</span></td><td>Tetraconazol 1ª</td></tr>
+          <tr class="prog-obligatorio"><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Venturia</td><td>A</td><td>Consul 65 WP + T-Buzol 25 WP</td><td>Dodina + tebuconazol</td><td>M7 + 3</td><td>90 g + 40 g</td><td>1.000</td><td>0,9 + 0,4</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 1ª</td></tr>
+          <tr class="prog-obligatorio"><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Venturia</td><td>B</td><td>Mancozeb 80 WP + T-Buzol 25 WP</td><td>Mancozeb + tebuconazol</td><td>M3 + 3</td><td>240 g + 40 g</td><td>1.000</td><td>2,4 + 0,4</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 1ª</td></tr>
+          <tr><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td>1.000</td><td>0,6</td><td><span class="badge-prog opcional">Según humedad relativa o heladas</span></td><td>No cuenta (tizón)</td></tr>
+          <tr class="prog-obligatorio"><td>5</td><td>Ramillete expuesto a botón blanco</td><td>Venturia</td><td>—</td><td>Consist Full 75 WG</td><td>Trifloxistrobina + tebuconazol</td><td>11 + 3</td><td>20 g</td><td>1.000</td><td>0,20</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 2ª</td></tr>
+          <tr><td>5</td><td>Ramillete expuesto a botón blanco</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td>1.000</td><td>0,6</td><td><span class="badge-prog opcional">Según humedad relativa o heladas</span></td><td>No cuenta (tizón)</td></tr>
+          <tr class="prog-obligatorio"><td>6</td><td>Inicio de flores abiertas (20-30%)</td><td>Venturia, botritis, alternaria</td><td>—</td><td>Sercadis Duo</td><td>Fluxapiroxad + difenoconazol</td><td>7 + 3</td><td>80 cc</td><td>1.000</td><td>0,80</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Difenoconazol 1ª</td></tr>
+          <tr class="prog-obligatorio"><td>6</td><td>Inicio de flores abiertas (20-30%)</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td>1.000</td><td>0,6</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
+          <tr class="prog-obligatorio"><td>7</td><td>Plena flor (80%)</td><td>Venturia, botritis, alternaria</td><td>—</td><td>Marcial SC</td><td>Pirimetanilo + difenoconazol</td><td>9 + 3</td><td>70 cc</td><td>1.500</td><td>1,05</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Difenoconazol 2ª</td></tr>
+          <tr class="prog-obligatorio"><td>7</td><td>Plena flor (80%)</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td>1.500</td><td>0,9</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
+          <tr class="prog-obligatorio"><td>8</td><td>Caída de pétalos</td><td>Venturia, botritis, saprófitos</td><td>—</td><td>Miravis Duo</td><td>Pidiflumetofeno + difenoconazol</td><td>7 + 3</td><td>45 cc</td><td>1.500</td><td>0,675</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td><span class="badge rotacion_alerta">Difenoconazol 3ª seguida</span></td></tr>
+          <tr class="prog-condicional"><td>9</td><td>Desde 7 días después de caída de pétalos</td><td>Venturia, enfermedades lenticelares</td><td>—</td><td>Mancozeb 80 WP + Systhane 40 WP</td><td>Mancozeb + miclobutanil</td><td>M3 + 3</td><td>240 g + 10 g</td><td>1.500</td><td>3,6 + 0,150</td><td><span class="badge-prog condicional">Tratamiento según condiciones de infección</span></td><td>Corta la racha de difenoconazol</td></tr>
+          <tr><td>10</td><td>Semana 5 (01/02)</td><td>Botritis y otros patógenos</td><td>—</td><td>Bonnus 400 SC</td><td>Pirimetanilo</td><td>9</td><td>70 cc</td><td>1.500</td><td>1,05</td><td><span class="badge-prog opcional">Según humedad relativa</span></td><td>—</td></tr>
         </tbody>
       </table>
     </div>
+  </section>
+
+  <section class="bloque">
+    <h2>Plan de acción frente a la situación climática</h2>
+    <p class="descripcion">Como se espera que la primavera continúe húmeda, el asesor recomienda seguir con controles periódicos contra venturia, <strong>separados a lo más cada 7 días</strong>, con fungicidas del listado de residuos de Frutas de Chile. Las secuencias parten 7 días después de la última aplicación del programa (Mancozeb + Systhane, 7 días después de caída de pétalos). Elige la opción según cuántas aplicaciones extra necesites en la temporada.</p>
+    <div class="plan-reglas">
+      <div><span class="chip-grupo carbox">Carboxamida</span> Luna Experience, Miravis Duo, Sercadis Duo, Elmus y Reflect Top: son del mismo grupo químico, nunca van dos seguidas.</div>
+      <div><span class="chip-grupo rotacion">Rotación</span> Mancozeb + IBE, Marcial SC y Consist Full: van entre dos carboxamidas.</div>
+    </div>
+    <div class="plan-base">Última aplicación por programa: <strong>7 días después de caída de pétalos — Mancozeb 80 WP + Systhane 40 WP</strong></div>
+    <div id="planOpciones"></div>
   </section>
 
 </div>
@@ -1541,6 +1575,11 @@ const CATALOGO_FUNGICIDAS = [
   { clave:'domark',    alias:['dormak'], nombre:'Domark 40 EW', ventanaCurativaHoras:null, resistenciaLavado:'desconocida' , ingredientes:['tetraconazol'] },
   { clave:'candado',   nombre:'Candado 200 EW',         ventanaCurativaHoras:96,   resistenciaLavado:'desconocida' , ingredientes:['penconazol'] },
   { clave:'topas',     alias:['topaz'], nombre:'Topas 200 EW',           ventanaCurativaHoras:96,   resistenciaLavado:'alta' , ingredientes:['penconazol'] },
+  // Reflect Top: su etiqueta registra venturia solo en manzano. Por recomendación del asesor se usa contra
+  // venturia en peral (fuera de etiqueta) y cuenta como cobertura preventiva. Sin acción curativa en etiqueta.
+  { clave:'reflect',   nombre:'Reflect Top',            ventanaCurativaHoras:null, resistenciaLavado:'desconocida', ingredientes:['isopirazam','difenoconazol'], fueraEtiqueta:true },
+  // Elmus: fluxapiroxad (SDHI) + piraclostrobina (estrobilurina). Ficha técnica pendiente: sin ventana curativa cargada.
+  { clave:'elmus',     nombre:'Elmus',                  ventanaCurativaHoras:null, resistenciaLavado:'desconocida', ingredientes:['fluxapiroxad','piraclostrobina'] },
   // Ingrediente escrito sin nombre comercial (ej. "Consul + Difenoconazole"): cuenta para la rotación,
   // pero sin ventana curativa porque depende de la etiqueta del producto comercial.
   { clave:'difenoconazol', nombre:'Difenoconazol (sin nombre comercial)', ventanaCurativaHoras:null, resistenciaLavado:'desconocida', ingredientes:['difenoconazol'], generico:true },
@@ -1560,8 +1599,12 @@ function buscarEnCatalogoCompleto(nombreProducto){
   const n = normalizarTexto(nombreProducto);
   return CATALOGO_FUNGICIDAS.filter(p => [p.clave, ...(p.alias || [])].some(c => n.includes(c)));
 }
-// Solo los productos que controlan venturia (excluye los cúpricos para tizón).
+// Solo los productos que controlan venturia en peral (excluye cúpricos y productos sin registro para venturia en peral).
 function buscarTodosEnCatalogo(nombreProducto){
+  return buscarEnCatalogoCompleto(nombreProducto).filter(p => !p.soloTizon && !p.sinVenturiaPeral);
+}
+// Productos que cuentan para la rotación de ingredientes (todo menos los cúpricos para tizón).
+function buscarParaRotacion(nombreProducto){
   return buscarEnCatalogoCompleto(nombreProducto).filter(p => !p.soloTizon);
 }
 
@@ -1642,7 +1685,7 @@ const RANGO_ESTADO = { correcta:3, deficiente:2, nula:1 };
 // Las mezclas se separan en sus ingredientes; cada uno lleva su propia cuenta.
 const MAX_SEGUIDAS_INGREDIENTE = 3;
 function ingredientesDe(textoProducto){
-  return [...new Set(buscarTodosEnCatalogo(textoProducto || '').flatMap(p => p.ingredientes || []))];
+  return [...new Set(buscarParaRotacion(textoProducto || '').flatMap(p => p.ingredientes || []))];
 }
 function marcarRotacion(aplicacionesProductor){
   const ordenadas = [...aplicacionesProductor].sort((a, b) => a.fecha - b.fecha);
@@ -2399,6 +2442,9 @@ function evaluarCoberturaEventoBase(ev, aplicaciones, ahora){
 // - Al terminar un evento de riesgo: carga residual = máximo entre la que se traía y (pico × factor de cobertura).
 function evaluarCoberturaEvento(ev, aplicaciones, ahora){
   const r = evaluarCoberturaEventoBase(ev, aplicaciones, ahora);
+  if(r.app && buscarEnCatalogoCompleto(r.app.producto || '').some(p => p.fueraEtiqueta)){
+    r.detalle += ' Incluye Reflect Top: uso para venturia por recomendación del asesor (fuera de etiqueta en peral).';
+  }
   if(r.app && r.app.rotacion && r.app.rotacion.length && r.estado === 'correcta'){
     r.estado = 'deficiente';
     r.detalle += ' ' + textoRotacion(r.app);
@@ -2706,6 +2752,83 @@ async function cargarFenologia(){
     estado.innerHTML = '<span style="color:#B23A2E;">No se pudieron leer los datos de la temporada desde Firestore. Revisa la consola (F12) y vuelve a abrir la pestaña.</span>';
   }
 }
+
+
+// --- plan de acción frente a la situación climática ---
+const PLAN_FECHA_BASE = '2026-09-28';   // última aplicación del programa: 7 días después de caída de pétalos
+const PLAN_INTERVALO_DIAS = 7;          // recomendación del asesor: a lo más cada 7 días
+const PLAN_FUNGICIDAS = {
+  1: { nombre:'Mancozeb 80 WP + IBE', tipo:'rotacion', ing:'Mancozeb + triazol', frac:'M3 + 3', dosis:'240 g + IBE' },
+  2: { nombre:'Luna Experience', tipo:'carbox', ing:'Fluopiram + tebuconazol', frac:'7 + 3', dosis:'50 cc' },
+  3: { nombre:'Marcial SC', tipo:'rotacion', ing:'Pirimetanilo + difenoconazol', frac:'9 + 3', dosis:'67 cc (máx. etiqueta)' },
+  4: { nombre:'Miravis Duo', tipo:'carbox', ing:'Pidiflumetofeno + difenoconazol', frac:'7 + 3', dosis:'45 cc' },
+  5: { nombre:'Sercadis Duo', tipo:'carbox', ing:'Fluxapiroxad + difenoconazol', frac:'7 + 3', dosis:'80 cc' },
+  6: { nombre:'Elmus', tipo:'carbox', ing:'Fluxapiroxad + piraclostrobina', frac:'7 + 11', dosis:'Según etiqueta (ficha pendiente)' },
+  7: { nombre:'Consist Full', tipo:'rotacion', ing:'Trifloxistrobina + tebuconazol', frac:'11 + 3', dosis:'20 g' },
+  8: { nombre:'Reflect Top', tipo:'carbox', ing:'Isopirazam + difenoconazol', frac:'7 + 3', dosis:'100 cc (mojamiento máx. 1.200 L/ha)' }
+};
+// IBE del grupo 1: se alterna para no superar el máximo de T-Buzol (1 uso más en la temporada)
+const PLAN_IBE_GRUPO1 = [
+  { producto:'Mancozeb 80 WP + T-Buzol 25 WP', ing:'Mancozeb + tebuconazol', dosis:'240 g + 40 g' },
+  { producto:'Mancozeb 80 WP + Systhane 40 WP', ing:'Mancozeb + miclobutanil', dosis:'240 g + 10 g' }
+];
+const PLAN_OPCIONES = [
+  { extra:4, alternativas:[
+    { sec:[1,6,3,2], nota:'Empieza con Mancozeb + IBE justo después del Mancozeb + Systhane del programa; por eso se usa T-Buzol para cambiar de triazol.' } ] },
+  { extra:5, alternativas:[
+    { sec:[3,6,1,8,7], nota:'Lleva Elmus y Consist Full (2 estrobilurinas); con el Consist Full del programa suman 3 en la temporada.' },
+    { sec:[1,4,7,5,1], nota:'Usa Mancozeb + IBE dos veces: la primera con T-Buzol y la segunda con Systhane, para no superar el máximo de T-Buzol. Consist Full y Sercadis Duo quedan en su máximo de temporada.' } ] },
+  { extra:6, alternativas:[
+    { sec:[7,4,1,6,3,2], nota:'Lleva Elmus y Consist Full (3 estrobilurinas en la temporada con el programa). Consist Full queda en su máximo.' },
+    { sec:[3,6,1,4,7,8], nota:'Lleva Elmus y Consist Full (3 estrobilurinas en la temporada con el programa). Consist Full queda en su máximo.' } ] },
+  { extra:8, alternativas:[
+    { sec:[1,8,7,5,1,6,3,2], nota:'Usa Mancozeb + IBE dos veces (T-Buzol y luego Systhane). Lleva 3 estrobilurinas en la temporada y repite fluxapiroxad (Sercadis Duo y Elmus, no seguidos). Consist Full, Sercadis Duo y T-Buzol quedan en su máximo.' } ] }
+];
+
+function renderPlanAccion(){
+  const cont = document.getElementById('planOpciones');
+  if(!cont) return;
+  const base = new Date(PLAN_FECHA_BASE + 'T12:00');
+  const fecha = n => new Date(base.getTime() + n * PLAN_INTERVALO_DIAS * 86400000);
+  const fmt = d => d.toLocaleDateString('es-CL', { weekday:'short', day:'2-digit', month:'2-digit' });
+  const letras = ['A','B','C'];
+  cont.innerHTML = PLAN_OPCIONES.map(op => {
+    const alts = op.alternativas.map((alt, ia) => {
+      let usosG1 = 0;
+      const pasos = alt.sec.map((n, i) => {
+        const f = PLAN_FUNGICIDAS[n];
+        let producto = f.nombre, ing = f.ing, dosis = f.dosis;
+        if(n === 1){ const v = PLAN_IBE_GRUPO1[Math.min(usosG1, PLAN_IBE_GRUPO1.length - 1)]; usosG1++; producto = v.producto; ing = v.ing; dosis = v.dosis; }
+        const carbox = alt.sec.slice(0, i + 1).filter(x => PLAN_FUNGICIDAS[x].tipo === 'carbox').length;
+        return { i, n, f, producto, ing, dosis, fecha: fecha(i + 1) };
+      });
+      const nCarbox = alt.sec.filter(x => PLAN_FUNGICIDAS[x].tipo === 'carbox').length;
+      return `<div class="plan-alternativa">
+        ${op.alternativas.length > 1 ? `<h4>Opción ${letras[ia]}</h4>` : ''}
+        <div class="plan-secuencia">${pasos.map((p, i) => `<span class="paso ${p.f.tipo}">${p.n}</span>${i < pasos.length - 1 ? '→' : ''}`).join('')}
+          <span style="margin-left:8px; color:#555;">${nCarbox} carboxamidas de ${alt.sec.length} aplicaciones</span></div>
+        <div class="tabla-scroll"><table class="tabla-alertas plan-tabla">
+          <thead><tr><th>Aplicación</th><th>Fecha estimada</th><th>Grupo</th><th>Producto</th><th>Ingrediente activo</th><th>FRAC</th><th>Dosis/100 L</th></tr></thead>
+          <tbody>${pasos.map(p => `<tr>
+            <td class="tipo-${p.f.tipo}"><strong>${p.i + 1}</strong></td>
+            <td>${fmt(p.fecha)}</td>
+            <td><span class="chip-grupo ${p.f.tipo}">${p.n} · ${p.f.tipo === 'carbox' ? 'Carboxamida' : 'Rotación'}</span></td>
+            <td><strong>${p.producto}</strong></td>
+            <td>${p.ing}</td><td>${p.f.frac}</td><td>${p.dosis}</td></tr>`).join('')}</tbody>
+        </table></div>
+        <div class="plan-nota">${alt.nota}</div>
+      </div>`;
+    }).join('');
+    const resumen = op.alternativas.map(a => a.sec.join(' → ')).join('  ·  ');
+    return `<details class="plan-opcion">
+      <summary>Si necesitas ${op.extra} aplicaciones extra en la temporada <span class="resumen">${op.alternativas.length > 1 ? op.alternativas.length + ' opciones · ' : ''}${resumen}</span></summary>
+      <div class="cuerpo">${alts}
+        <div class="plan-nota">Fechas estimadas cada ${PLAN_INTERVALO_DIAS} días. Si llueve antes de cumplirse el plazo, adelantar la aplicación. Coordinar con los insecticidas obligatorios del programa (semanas 41, 44, 46 y 48, y Agrimek en la 2ª quincena de octubre).</div>
+      </div>
+    </details>`;
+  }).join('');
+}
+renderPlanAccion();
 
 // --- pestañas ---
 document.querySelectorAll('.tab-btn').forEach(btn=>{
