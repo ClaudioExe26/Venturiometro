@@ -2,7 +2,7 @@
 // La página se pide siempre primero a la red (para ver la última versión subida a GitHub);
 // si no hay conexión, se abre la copia guardada. Los datos de Firebase no se guardan aquí:
 // siempre se leen en línea.
-const CACHE = 'venturiometro-v2'; // cambia la versión para renovar íconos guardados
+const CACHE = 'venturiometro-v4'; // cambia la versión para renovar íconos guardados
 const ARCHIVOS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
