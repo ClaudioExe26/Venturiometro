@@ -382,6 +382,75 @@
   .aviso-instalar{ position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); z-index:50; display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--linea); border-left:4px solid var(--magenta-frutea); border-radius:8px; padding:10px 12px; box-shadow:0 6px 20px rgba(0,0,0,0.18); font-size:0.85rem; max-width:560px; margin:0 auto; }
   .aviso-instalar span{ flex:1; }
   .btn-cerrar-aviso{ background:none; border:none; font-size:1.3rem; line-height:1; cursor:pointer; color:#777; padding:0 4px; }
+  .chip-color{ display:inline-block; font-size:0.75rem; font-weight:700; padding:2px 8px; border-radius:10px; white-space:nowrap; }
+  .chip-color.amarillo{ background:#FFE45C; color:#5c4600; }
+  .chip-color.verde{ background:#92D050; color:#24420a; }
+  .chip-color.gris{ background:#e3e3e3; color:#555; }
+  #tablaCatalogo tr.fila-amarillo td{ background:#FFFBE0; }
+  #tablaCatalogo tr.fila-verde td{ background:#F2F9EA; }
+  #tablaCatalogo tr.fila-amarillo td:first-child{ border-left:6px solid #FFD400; }
+  #tablaCatalogo tr.fila-verde td:first-child{ border-left:6px solid #6BB12E; }
+  #tablaCatalogo tr.fila-cobre td{ color:#777; }
+  #tablaCatalogo tr.separador td{ font-weight:700; font-size:0.9rem; padding:10px 12px; }
+  /* columnas Color y Nombre comercial fijas al desplazar la tabla hacia el lado */
+  #tablaCatalogo th:nth-child(1), #tablaCatalogo tr:not(.separador) td:nth-child(1){ position:sticky; left:0; z-index:2; width:112px; min-width:112px; max-width:112px; }
+  #tablaCatalogo th:nth-child(2), #tablaCatalogo tr:not(.separador) td:nth-child(2){ position:sticky; left:112px; z-index:2; min-width:180px; box-shadow:4px 0 6px -3px rgba(0,0,0,0.18); }
+  #tablaCatalogo th:nth-child(1), #tablaCatalogo th:nth-child(2){ z-index:3; }
+  #tablaCatalogo tr.fila-amarillo td:nth-child(-n+2){ background:#FFFBE0; }
+  #tablaCatalogo tr.fila-verde td:nth-child(-n+2){ background:#F2F9EA; }
+  #tablaCatalogo tr.fila-cobre td:nth-child(-n+2){ background:#ffffff; }
+  #tablaCatalogo .sep-fijo{ position:sticky; left:12px; display:inline-block; }
+  #tablaCatalogo tr.separador.amarillo td{ background:#FFE45C; color:#5c4600; }
+  #tablaCatalogo tr.separador.verde td{ background:#92D050; color:#24420a; }
+  #tablaCatalogo tr.separador.gris td{ background:#e3e3e3; color:#555; }
+  .leyenda-colores{ background:#fff; border:2px solid var(--magenta-frutea); border-radius:10px; padding:10px 14px; margin-bottom:12px; font-size:0.95rem; display:grid; gap:6px; }
+  .leyenda-titulo{ font-family:'Fraunces',serif; font-weight:700; color:var(--verde-huerto); }
+  .leyenda-secuencia{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-weight:700; }
+  .guia-regla{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:6px 0 12px; font-size:1.1rem; font-weight:700; color:#fff; }
+  .guia-paso{ padding:8px 14px; border-radius:10px; font-size:1rem; }
+  .guia-paso.amarillo{ background:#FFE45C; color:#5c4600; }
+  .guia-paso.verde{ background:#92D050; color:#24420a; }
+  .guia-reglas-lista{ display:grid; gap:6px; margin-bottom:14px; }
+  .guia-reglas-lista > div{ background:#fff; border:1px solid var(--linea); border-radius:6px; padding:9px 12px; font-size:0.95rem; }
+  .guia-ayudante{ background:#fff; border:2px solid var(--magenta-frutea); border-radius:10px; padding:12px 14px; margin-bottom:14px; }
+  .guia-ayudante label{ display:block; font-size:1rem; margin-bottom:6px; }
+  .guia-ayudante select{ font-family:'Inter',sans-serif; font-size:1rem; padding:9px 10px; border:1px solid var(--linea); border-radius:6px; width:100%; max-width:420px; background:#fff; }
+  .guia-sugerencia{ margin-top:10px; font-size:0.95rem; }
+  .guia-sugerencia .titulo{ font-weight:700; margin-bottom:6px; }
+  .guia-columnas{ display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:14px; }
+  .guia-titulo{ font-family:'Fraunces',serif; font-size:1.05rem; margin:0 0 8px; padding:6px 10px; border-radius:6px; }
+  .guia-titulo.amarillo{ background:#FFE45C; color:#5c4600; }
+  .guia-titulo.verde{ background:#92D050; color:#24420a; }
+  .guia-titulo small{ font-family:'Inter',sans-serif; font-weight:500; font-size:0.75rem; margin-left:6px; }
+  .guia-tarjetas{ display:grid; gap:6px; }
+  .guia-tarjeta{ background:#fff; border:1px solid var(--linea); border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between; gap:10px; align-items:center; }
+  .guia-tarjeta.amarillo{ border-left:6px solid #FFD400; }
+  .guia-tarjeta.verde{ border-left:6px solid #6BB12E; }
+  .guia-tarjeta .nombre{ font-weight:700; font-size:0.95rem; }
+  .guia-tarjeta .detalle{ font-size:0.78rem; color:#666; }
+  .guia-tarjeta .max{ text-align:center; min-width:62px; font-size:0.7rem; color:#555; line-height:1.1; }
+  .guia-tarjeta .max b{ display:block; font-size:1.2rem; color:var(--verde-huerto); }
+  .nota-guia{ font-size:0.85rem; background:#fff; border-radius:6px; padding:8px 12px; margin-top:12px; border:1px solid var(--linea); }
+  .aviso-ahora{ background:#fff; border-left:6px solid var(--magenta-frutea); border-radius:0 10px 10px 0; padding:12px 14px; font-size:1rem; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.08); }
+  .aviso-ahora .grande{ font-size:1.1rem; font-weight:700; display:block; margin-bottom:4px; }
+  .aviso-ahora .chico{ font-size:0.8rem; color:#666; display:block; margin-top:6px; }
+  .aviso-ahora.alerta{ border-left-color:#D9791E; }
+  .aviso-ahora.ok{ border-left-color:#6BB12E; }
+  .ahora-botones{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+  .ahora-btn{ font-family:'Inter',sans-serif; font-size:0.95rem; font-weight:600; padding:10px 16px; border-radius:999px; border:2px solid var(--verde-huerto); background:#fff; color:var(--verde-huerto); cursor:pointer; }
+  .ahora-btn.activo{ background:var(--verde-huerto); color:#fff; }
+  .ahora-panel{ background:#fff; border:1px solid var(--linea); border-radius:10px; padding:12px 14px; }
+  .ahora-texto{ margin:0 0 10px; font-size:0.95rem; }
+  .tabla-horas td{ vertical-align:middle; }
+  .tabla-horas tr.actual td{ background:#FDE7F1; font-weight:600; }
+  .tabla-horas tr.actual td:first-child::after{ content:' ← ahora'; color:var(--magenta-frutea); font-weight:700; }
+  .chips-productos{ display:flex; flex-wrap:wrap; gap:5px; }
+  @media (max-width: 640px){
+    .tabla-horas thead{ display:none; }
+    .tabla-horas, .tabla-horas tbody, .tabla-horas tr, .tabla-horas td{ display:block; width:100%; }
+    .tabla-horas tr{ border-bottom:1px solid var(--linea); padding:6px 0; }
+    .tabla-horas td{ border:none !important; padding:4px 8px; }
+  }
   .plan-reglas{ display:grid; gap:6px; margin:6px 0 10px; font-size:0.85rem; }
   .plan-reglas > div{ background:#fff; border:1px solid var(--linea); border-radius:6px; padding:8px 12px; }
   .chip-grupo{ display:inline-block; font-size:0.72rem; font-weight:700; padding:2px 9px; border-radius:10px; margin-right:6px; }
@@ -951,10 +1020,16 @@
   <section class="bloque">
     <h2>Control de venturia</h2>
     <p class="descripcion">Datos extraídos de las fichas técnicas SAG de cada producto. La columna "Resistencia al lavado" solo indica "Alta/Baja" cuando la propia etiqueta lo declara explícitamente — el resto es una referencia general por grupo químico o de campo, y debe confirmarse con el asesor antes de decidir un programa de aplicación.</p>
+    <div class="leyenda-colores">
+      <div class="leyenda-titulo">¿Cómo leer esta tabla?</div>
+      <div class="leyenda-secuencia"><span class="chip-color amarillo">🟨 Amarillo</span> → <span class="chip-color verde">🟩 Verde</span> → <span class="chip-color amarillo">🟨 Amarillo</span> → <span class="chip-color verde">🟩 Verde</span> → …</div>
+      <div>Aplica <strong>1 amarillo, luego 1 verde</strong>, y así sucesivamente. Nunca dos amarillos seguidos y nunca el mismo producto dos veces seguidas.</div>
+    </div>
     <div class="tabla-scroll">
       <table class="tabla-alertas" id="tablaCatalogo">
         <thead>
           <tr>
+            <th>Color</th>
             <th>Nombre comercial</th>
             <th>Ingrediente(s) activo(s)</th>
             <th>Grupo FRAC</th>
@@ -966,32 +1041,36 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>Captan 80 WP</td><td>Captan</td><td>M4</td><td>2 a 3</td><td>Preventivo</td><td>90–180 g/100L</td><td>7 días</td><td>Baja — etiqueta indica reaplicar inmediatamente después de lluvia</td></tr>
-          <tr><td>Mancozeb 80 WP</td><td>Mancozeb</td><td>M3</td><td>Hasta 5 (estados fenológicos más susceptibles)</td><td>Preventivo</td><td>180–240 g/100L</td><td>7 días</td><td>Baja — etiqueta indica reaplicar inmediatamente después de lluvia</td></tr>
-          <tr><td>Consul 65 WP</td><td>Dodina</td><td>M7 (guanidinas)</td><td>4</td><td>Preventivo + curativo + retroactivo</td><td>90 g/100L (60–90 según etapa)</td><td>7 días</td><td>Media — de contacto, con ventana curativa post-lluvia</td></tr>
-          <tr><td>DODINE 65 WP</td><td>Dodina (mismo activo que Consul)</td><td>M7</td><td>5</td><td>Preventivo + curativo, hasta 48h de poder erradicante</td><td>60–90 g/100L</td><td>7 días</td><td>Media — mismo perfil que Consul (mismo principio activo)</td></tr>
-          <tr><td>INDAR 2F</td><td>Fenbuconazol</td><td>3 (DMI/triazol)</td><td>2</td><td>Preventivo + curativo</td><td>12–14 cc/100L</td><td>30 días</td><td>Alta — etiqueta indica que no se lava con lluvia posterior</td></tr>
-          <tr><td>Systhane 40 WP</td><td>Miclobutanil</td><td>3 (DMI/triazol)</td><td>4</td><td>Preventivo + curativo (hasta 96h post-infección)</td><td>7,5–10 g/100L</td><td>15 días</td><td>Sin dato en etiqueta; grupo químico asociado a mejor resistencia al lavado</td></tr>
-          <tr><td>T-Buzol 25% WP</td><td>Tebuconazol</td><td>3 (DMI/triazol)</td><td>2</td><td>Preventivo + curativo + erradicante</td><td>40 g/100L</td><td>14 días</td><td>Sin dato en etiqueta; grupo químico asociado a mejor resistencia al lavado</td></tr>
-          <tr><td>Luna Experience 400 SC</td><td>Fluopiram + Tebuconazol</td><td>7 (C2) + 3 (G)</td><td>Pendiente de confirmar</td><td>Translaminar y sistémico</td><td>50 cc/100L</td><td>8 días</td><td>Sin dato en etiqueta; referencia de campo indica buena resistencia al lavado</td></tr>
-          <tr><td>Miravis Duo</td><td>Pidiflumetofeno + Difenoconazol</td><td>7 + 3</td><td>3 (intervalo mín. 20 días)</td><td>Preventivo, con efecto retroactivo hasta 100h post-infección</td><td>0,6–0,75 L/ha (sin cc/100L en etiqueta)</td><td>60 días</td><td>Sin dato en etiqueta</td></tr>
-          <tr><td>Sercadis Duo</td><td>Fluxapiroxad + Difenoconazol</td><td>7 (C2) + 3 (C14)</td><td>2</td><td>Translaminar y de protección</td><td>50–80 cc/100L</td><td>Manzano 30 / Peral 60 días</td><td>Sin dato en etiqueta</td></tr>
-          <tr><td>Marcial SC</td><td>Pirimetanilo + Difenoconazol</td><td>9 + 3</td><td>3 (no consecutivas, intervalo mín. 7 días)</td><td>Sistémico y de contacto</td><td>40–67 cc/hL</td><td>12 días</td><td>Sin dato en etiqueta</td></tr>
-          <tr><td>Bonnus 400 SC</td><td>Pirimetanilo</td><td>9 (D1, anilinopirimidinas)</td><td>2</td><td>Efecto retroactivo 48–72h post-infección</td><td>50–70 cc/hL (ó 1,0 L/ha)</td><td>1 día</td><td>Sin dato en etiqueta</td></tr>
-          <tr><td>Consist Full 75% WG</td><td>Trifloxistrobina + Tebuconazol</td><td>11 (C3) + 3 (G1)</td><td>2</td><td>Preventivo + curativo + erradicante</td><td>20 g/100L (mín. 200 g/ha)</td><td>7 días</td><td>Sin dato en etiqueta</td></tr>
-          <tr><td>Premiado 250 EC</td><td>Difenoconazol</td><td>3 (DMI/triazol)</td><td>4</td><td>Preventivo + curativo (hasta 100h post-infección)</td><td>10–15 cc/100L (mín. 200–300 cc/ha)</td><td>14 días</td><td>Sin dato en etiqueta; grupo químico asociado a mejor resistencia al lavado</td></tr>
-                  <tr><td>Polisulfuro de Calcio 350 SL</td><td>Polisulfuro de calcio</td><td>M2</td><td>4</td><td>Contacto, preventivo y curativo (sin horas en etiqueta). Solo en pleno receso</td><td>3–5 L/100L</td><td>Solo receso (caída de hojas a antes de yema rosada)</td><td>Baja — etiqueta indica repetir si llueve hasta 3 días después</td></tr>
-          <tr><td>Syllit 400 SC</td><td>Dodina (mismo activo que Consul y Dodine)</td><td>M7</td><td>4 (preventivas + curativas)</td><td>Preventivo + curativo con efecto retroactivo (sin horas en etiqueta)</td><td>100–150 cc/100L (curativo 150)</td><td>7 días</td><td>Sin dato en etiqueta; indica no aplicar si se prevén lluvias</td></tr>
-          <tr><td>Domark 40 EW</td><td>Tetraconazol</td><td>3 (DMI/triazol)</td><td>3</td><td>Sistémico y de contacto, preventivo y curativo (sin horas en etiqueta)</td><td>80 cc/100L</td><td>7–10 días</td><td>Sin dato en etiqueta</td></tr>
-          <tr><td>Krymet 50 SC</td><td>Kresoxim-metilo</td><td>11 (estrobilurina)</td><td>2 no consecutivas</td><td>Contacto, preventivo (sin acción curativa). Registrado para sarna del peral, desde inicio de floración hasta fruto formado</td><td>13 cc/100L (200 cc/ha)</td><td>10–12 días de protección (8 días si llueve más de 80 mm)</td><td>Media — la etiqueta acorta la protección a 8 días con lluvias sobre 80 mm</td></tr>
-          <tr><td>Melyra</td><td>Mefentrifluconazol + piraclostrobina</td><td>3 + 11</td><td>2</td><td>Sistémico y translaminar, preventivo y curativo (sin horas en etiqueta). Se usa contra venturia por recomendación del asesor; su etiqueta registra venturia solo en manzano y no incluye peral</td><td>35–45 cc/100L (manzano; máx. 700 cc/ha)</td><td>7–10 días</td><td>Sin dato en etiqueta</td></tr>
-          <tr><td>Reflect Top</td><td>Isopirazam + difenoconazol</td><td>7 + 3</td><td>2 no secuenciales</td><td>Preventivo. Se usa contra venturia por recomendación del asesor; su etiqueta registra venturia solo en manzano (en peral: oídio, pudrición calicinal y corazón mohoso)</td><td>75–100 cc/100L (oídio); 100 cc/100L (botritis, alternaria)</td><td>7–14 días</td><td>Sin dato en etiqueta</td></tr>
-          <tr><td>Candado 200 EW</td><td>Penconazol (mismo activo que Topas)</td><td>3 (DMI/triazol)</td><td>2</td><td>Sistémico, preventivo y curativo (hasta 96h post-infección)</td><td>10–15 cc/100L (mín. 200–300 cc/ha)</td><td>10–15 días</td><td>Sin dato en etiqueta; indica aplicar sin agua libre en el follaje y no aplicar con lluvias inminentes</td></tr>
-          <tr><td>Topas 200 EW</td><td>Penconazol</td><td>3 (DMI/triazol)</td><td>4 (sumando otros del mismo grupo químico)</td><td>Sistémico, preventivo y curativo (hasta 96h post-infección)</td><td>10–15 cc/100L (mín. 200–300 cc/ha)</td><td>7–14 días</td><td>Alta — etiqueta indica rápida absorción, importante ante lluvias</td></tr>
-          <tr class="fila-tizon"><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>4 en primavera (6 invernales)</td><td>Contacto, preventivo. En peral: tizón de la flor, no venturia</td><td>60–120 g/100L (primavera)</td><td>7–10 días</td><td>Sin dato en etiqueta</td></tr>
-          <tr class="fila-tizon"><td>Hidro-Cup WG</td><td>Hidróxido de cobre</td><td>M1</td><td>4</td><td>Contacto, preventivo. En peral: tizón de la flor, no venturia. Russet en floración en Packham's</td><td>200–250 g/100L (otoño, yema hinchada); 30–50 g/100L en floración</td><td>Sin dato</td><td>Baja — etiqueta indica repetir después de una lluvia</td></tr>
-          <tr class="fila-tizon"><td>Cuprodul WG</td><td>Óxido cuproso</td><td>M1</td><td>4</td><td>Contacto. En peral: tizón bacteriano, no venturia. No sobrepasar dosis en Packham's</td><td>200–300 g/100L (otoño, yema hinchada); 50–100 g/100L en floración</td><td>10–15 días</td><td>Baja — etiqueta indica repetir después de una lluvia</td></tr>
-</tbody>
+          <tr class="separador amarillo"><td colspan="9"><span class="sep-fijo">🟨 AMARILLOS — llevan carboxamida. Nunca apliques dos amarillos seguidos.</span></td></tr>
+          <tr class="fila-amarillo"><td><span class="chip-color amarillo">🟨 Amarillo</span></td><td>Luna Experience 400 SC</td><td>Fluopiram + Tebuconazol</td><td>7 (C2) + 3 (G)</td><td>2</td><td>Translaminar y sistémico</td><td>50 cc/100L</td><td>8 días</td><td>Sin dato en etiqueta; referencia de campo indica buena resistencia al lavado</td></tr>
+          <tr class="fila-amarillo"><td><span class="chip-color amarillo">🟨 Amarillo</span></td><td>Miravis Duo</td><td>Pidiflumetofeno + Difenoconazol</td><td>7 + 3</td><td>3 (intervalo mín. 20 días)</td><td>Preventivo, con efecto retroactivo hasta 100h post-infección</td><td>0,6–0,75 L/ha (sin cc/100L en etiqueta)</td><td>60 días</td><td>Sin dato en etiqueta</td></tr>
+          <tr class="fila-amarillo"><td><span class="chip-color amarillo">🟨 Amarillo</span></td><td>Sercadis Duo</td><td>Fluxapiroxad + Difenoconazol</td><td>7 (C2) + 3 (C14)</td><td>2</td><td>Translaminar y de protección</td><td>50–80 cc/100L</td><td>Manzano 30 / Peral 60 días</td><td>Sin dato en etiqueta</td></tr>
+          <tr class="fila-amarillo"><td><span class="chip-color amarillo">🟨 Amarillo</span></td><td>Reflect Top</td><td>Isopirazam + difenoconazol</td><td>7 + 3</td><td>2 no secuenciales</td><td>Preventivo. Se usa contra venturia por recomendación del asesor; su etiqueta registra venturia solo en manzano (en peral: oídio, pudrición calicinal y corazón mohoso)</td><td>75–100 cc/100L (oídio); 100 cc/100L (botritis, alternaria)</td><td>7–14 días</td><td>Sin dato en etiqueta</td></tr>
+          <tr class="fila-amarillo"><td><span class="chip-color amarillo">🟨 Amarillo</span></td><td>Elmus</td><td>Fluxapiroxad + piraclostrobina</td><td>7 + 11</td><td>2</td><td>Sistémico y translaminar, preventivo y curativo (sin horas en etiqueta). Registrado para venturia en peral, desde puntas verdes hasta fruto en desarrollo</td><td>25–42 cc/100L (máx. 0,6 L/ha)</td><td>7–10 días</td><td>Sin dato en etiqueta</td></tr>
+          <tr class="separador verde"><td colspan="9"><span class="sep-fijo">🟩 VERDES — van entre dos amarillos. ⭐ = los más seguros para rotar (aplicar antes de la lluvia).</span></td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>⭐ Captan 80 WP</td><td>Captan</td><td>M4</td><td>2 a 3</td><td>Preventivo</td><td>90–180 g/100L</td><td>7 días</td><td>Baja — etiqueta indica reaplicar inmediatamente después de lluvia</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>⭐ Mancozeb 80 WP</td><td>Mancozeb</td><td>M3</td><td>Hasta 5 (estados fenológicos más susceptibles)</td><td>Preventivo</td><td>180–240 g/100L</td><td>7 días</td><td>Baja — etiqueta indica reaplicar inmediatamente después de lluvia</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>⭐ Consul 65 WP</td><td>Dodina</td><td>M7 (guanidinas)</td><td>4</td><td>Preventivo + curativo + retroactivo</td><td>90 g/100L (60–90 según etapa)</td><td>7 días</td><td>Media — de contacto, con ventana curativa post-lluvia</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>⭐ DODINE 65 WP</td><td>Dodina (mismo activo que Consul)</td><td>M7</td><td>5</td><td>Preventivo + curativo, hasta 48h de poder erradicante</td><td>60–90 g/100L</td><td>7 días</td><td>Media — mismo perfil que Consul (mismo principio activo)</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>INDAR 2F</td><td>Fenbuconazol</td><td>3 (DMI/triazol)</td><td>2</td><td>Preventivo + curativo</td><td>12–14 cc/100L</td><td>30 días</td><td>Alta — etiqueta indica que no se lava con lluvia posterior</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>Systhane 40 WP</td><td>Miclobutanil</td><td>3 (DMI/triazol)</td><td>4</td><td>Preventivo + curativo (hasta 96h post-infección)</td><td>7,5–10 g/100L</td><td>15 días</td><td>Sin dato en etiqueta; grupo químico asociado a mejor resistencia al lavado</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>T-Buzol 25% WP</td><td>Tebuconazol</td><td>3 (DMI/triazol)</td><td>2</td><td>Preventivo + curativo + erradicante</td><td>40 g/100L</td><td>14 días</td><td>Sin dato en etiqueta; grupo químico asociado a mejor resistencia al lavado</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>Marcial SC</td><td>Pirimetanilo + Difenoconazol</td><td>9 + 3</td><td>3 (no consecutivas, intervalo mín. 7 días)</td><td>Sistémico y de contacto</td><td>40–67 cc/hL</td><td>12 días</td><td>Sin dato en etiqueta</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>Bonnus 400 SC</td><td>Pirimetanilo</td><td>9 (D1, anilinopirimidinas)</td><td>2</td><td>Efecto retroactivo 48–72h post-infección</td><td>50–70 cc/hL (ó 1,0 L/ha)</td><td>1 día</td><td>Sin dato en etiqueta</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>Consist Full 75% WG</td><td>Trifloxistrobina + Tebuconazol</td><td>11 (C3) + 3 (G1)</td><td>2</td><td>Preventivo + curativo + erradicante</td><td>20 g/100L (mín. 200 g/ha)</td><td>7 días</td><td>Sin dato en etiqueta</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>Premiado 250 EC</td><td>Difenoconazol</td><td>3 (DMI/triazol)</td><td>4</td><td>Preventivo + curativo (hasta 100h post-infección)</td><td>10–15 cc/100L (mín. 200–300 cc/ha)</td><td>14 días</td><td>Sin dato en etiqueta; grupo químico asociado a mejor resistencia al lavado</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>Polisulfuro de Calcio 350 SL</td><td>Polisulfuro de calcio</td><td>M2</td><td>4</td><td>Contacto, preventivo y curativo (sin horas en etiqueta). Solo en pleno receso</td><td>3–5 L/100L</td><td>Solo receso (caída de hojas a antes de yema rosada)</td><td>Baja — etiqueta indica repetir si llueve hasta 3 días después</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>⭐ Syllit 400 SC</td><td>Dodina (mismo activo que Consul y Dodine)</td><td>M7</td><td>4 (preventivas + curativas)</td><td>Preventivo + curativo con efecto retroactivo (sin horas en etiqueta)</td><td>100–150 cc/100L (curativo 150)</td><td>7 días</td><td>Sin dato en etiqueta; indica no aplicar si se prevén lluvias</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>Domark 40 EW</td><td>Tetraconazol</td><td>3 (DMI/triazol)</td><td>3</td><td>Sistémico y de contacto, preventivo y curativo (sin horas en etiqueta)</td><td>80 cc/100L</td><td>7–10 días</td><td>Sin dato en etiqueta</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>Krymet 50 SC</td><td>Kresoxim-metilo</td><td>11 (estrobilurina)</td><td>2 no consecutivas</td><td>Contacto, preventivo (sin acción curativa). Registrado para sarna del peral, desde inicio de floración hasta fruto formado</td><td>13 cc/100L (200 cc/ha)</td><td>10–12 días de protección (8 días si llueve más de 80 mm)</td><td>Media — la etiqueta acorta la protección a 8 días con lluvias sobre 80 mm</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>Melyra</td><td>Mefentrifluconazol + piraclostrobina</td><td>3 + 11</td><td>2</td><td>Sistémico y translaminar, preventivo y curativo (sin horas en etiqueta). Se usa contra venturia por recomendación del asesor; su etiqueta registra venturia solo en manzano y no incluye peral</td><td>35–45 cc/100L (manzano; máx. 700 cc/ha)</td><td>7–10 días</td><td>Sin dato en etiqueta</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>Candado 200 EW</td><td>Penconazol (mismo activo que Topas)</td><td>3 (DMI/triazol)</td><td>2</td><td>Sistémico, preventivo y curativo (hasta 96h post-infección)</td><td>10–15 cc/100L (mín. 200–300 cc/ha)</td><td>10–15 días</td><td>Sin dato en etiqueta; indica aplicar sin agua libre en el follaje y no aplicar con lluvias inminentes</td></tr>
+          <tr class="fila-verde"><td><span class="chip-color verde">🟩 Verde</span></td><td>Topas 200 EW</td><td>Penconazol</td><td>3 (DMI/triazol)</td><td>4 (sumando otros del mismo grupo químico)</td><td>Sistémico, preventivo y curativo (hasta 96h post-infección)</td><td>10–15 cc/100L (mín. 200–300 cc/ha)</td><td>7–14 días</td><td>Alta — etiqueta indica rápida absorción, importante ante lluvias</td></tr>
+          <tr class="separador gris"><td colspan="9"><span class="sep-fijo">Cobres — son para tizón bacteriano, no cuentan para venturia.</span></td></tr>
+          <tr class="fila-cobre"><td><span class="chip-color gris">Solo tizón</span></td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>4 en primavera (6 invernales)</td><td>Contacto, preventivo. En peral: tizón de la flor, no venturia</td><td>60–120 g/100L (primavera)</td><td>7–10 días</td><td>Sin dato en etiqueta</td></tr>
+          <tr class="fila-cobre"><td><span class="chip-color gris">Solo tizón</span></td><td>Hidro-Cup WG</td><td>Hidróxido de cobre</td><td>M1</td><td>4</td><td>Contacto, preventivo. En peral: tizón de la flor, no venturia. Russet en floración en Packham's</td><td>200–250 g/100L (otoño, yema hinchada); 30–50 g/100L en floración</td><td>Sin dato</td><td>Baja — etiqueta indica repetir después de una lluvia</td></tr>
+          <tr class="fila-cobre"><td><span class="chip-color gris">Solo tizón</span></td><td>Cuprodul WG</td><td>Óxido cuproso</td><td>M1</td><td>4</td><td>Contacto. En peral: tizón bacteriano, no venturia. No sobrepasar dosis en Packham's</td><td>200–300 g/100L (otoño, yema hinchada); 50–100 g/100L en floración</td><td>10–15 días</td><td>Baja — etiqueta indica repetir después de una lluvia</td></tr>
+        </tbody>
       </table>
     </div>
     <p class="descripcion" style="margin-top:16px;">
@@ -1009,26 +1088,60 @@
           <tr><th>#</th><th>Estado fenológico</th><th>Objetivo</th><th>Opción</th><th>Producto</th><th>Ingrediente(s) activo(s)</th><th>FRAC</th><th>Dosis/100 L</th><th>Mojamiento (L/ha)</th><th>Total producto/ha</th><th>Carácter</th><th>Rotación venturia</th></tr>
         </thead>
         <tbody>
-          <tr class="prog-condicional"><td>1</td><td>Julio (pleno receso)</td><td>Escama San José, venturia</td><td>A</td><td>Polisulfuro de Calcio 350 SL</td><td>Polisulfuro de calcio</td><td>M2</td><td>5.000 cc (mín. 3%)</td><td>1.500</td><td>75,0</td><td><span class="badge-prog condicional">Obligatorio si hubo infección la temporada anterior</span></td><td>—</td></tr>
-          <tr class="prog-condicional"><td>1</td><td>Julio (pleno receso)</td><td>Escama San José, venturia</td><td>B</td><td>Polisul 35</td><td>Polisulfuro de calcio</td><td>M2</td><td>5.000 cc (mín. 3%)</td><td>1.500</td><td>75,0</td><td><span class="badge-prog condicional">Obligatorio si hubo infección la temporada anterior</span></td><td>—</td></tr>
+          <tr class="prog-condicional"><td>1</td><td>Julio (pleno receso)</td><td>Escama San José, venturia</td><td>A</td><td><span class="chip-color verde">🟩</span> Polisulfuro de Calcio 350 SL</td><td>Polisulfuro de calcio</td><td>M2</td><td>5.000 cc (mín. 3%)</td><td>1.500</td><td>75,0</td><td><span class="badge-prog condicional">Obligatorio si hubo infección la temporada anterior</span></td><td>—</td></tr>
+          <tr class="prog-condicional"><td>1</td><td>Julio (pleno receso)</td><td>Escama San José, venturia</td><td>B</td><td><span class="chip-color verde">🟩</span> Polisul 35</td><td>Polisulfuro de calcio</td><td>M2</td><td>5.000 cc (mín. 3%)</td><td>1.500</td><td>75,0</td><td><span class="badge-prog condicional">Obligatorio si hubo infección la temporada anterior</span></td><td>—</td></tr>
           <tr class="prog-obligatorio"><td>2</td><td>Yema hinchada</td><td>Tizón bacteriano</td><td>A</td><td>Cuprodul WG</td><td>Óxido cuproso</td><td>M1</td><td>300 g</td><td>1.000</td><td>3,0</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
           <tr class="prog-obligatorio"><td>2</td><td>Yema hinchada</td><td>Tizón bacteriano</td><td>B</td><td>Hidro-Cup WG</td><td>Hidróxido de cobre</td><td>M1</td><td>250 g</td><td>1.000</td><td>2,5</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
-          <tr><td>3</td><td>Puntas verdes avanzadas</td><td>Venturia (con aceite + diazinon)</td><td>—</td><td>Domark 40 EW</td><td>Tetraconazol</td><td>3</td><td>80 cc</td><td>1.500</td><td>—</td><td><span class="badge-prog opcional">Opcional, si se hace control conjunto</span></td><td>Tetraconazol 1ª</td></tr>
-          <tr class="prog-obligatorio"><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Venturia</td><td>A</td><td>Consul 65 WP + T-Buzol 25 WP</td><td>Dodina + tebuconazol</td><td>M7 + 3</td><td>90 g + 40 g</td><td>1.000</td><td>0,9 + 0,4</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 1ª</td></tr>
-          <tr class="prog-obligatorio"><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Venturia</td><td>B</td><td>Mancozeb 80 WP + T-Buzol 25 WP</td><td>Mancozeb + tebuconazol</td><td>M3 + 3</td><td>240 g + 40 g</td><td>1.000</td><td>2,4 + 0,4</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 1ª</td></tr>
+          <tr><td>3</td><td>Puntas verdes avanzadas</td><td>Venturia (con aceite + diazinon)</td><td>—</td><td><span class="chip-color verde">🟩</span> Domark 40 EW</td><td>Tetraconazol</td><td>3</td><td>80 cc</td><td>1.500</td><td>—</td><td><span class="badge-prog opcional">Opcional, si se hace control conjunto</span></td><td>Tetraconazol 1ª</td></tr>
+          <tr class="prog-obligatorio"><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Venturia</td><td>A</td><td><span class="chip-color verde">🟩</span> Consul 65 WP + T-Buzol 25 WP</td><td>Dodina + tebuconazol</td><td>M7 + 3</td><td>90 g + 40 g</td><td>1.000</td><td>0,9 + 0,4</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 1ª</td></tr>
+          <tr class="prog-obligatorio"><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Venturia</td><td>B</td><td><span class="chip-color verde">🟩</span> Mancozeb 80 WP + T-Buzol 25 WP</td><td>Mancozeb + tebuconazol</td><td>M3 + 3</td><td>240 g + 40 g</td><td>1.000</td><td>2,4 + 0,4</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 1ª</td></tr>
           <tr><td>4</td><td>Puntas verdes a ramillete expuesto</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td>1.000</td><td>0,6</td><td><span class="badge-prog opcional">Según humedad relativa o heladas</span></td><td>No cuenta (tizón)</td></tr>
-          <tr class="prog-obligatorio"><td>5</td><td>Ramillete expuesto a botón blanco</td><td>Venturia</td><td>—</td><td>Consist Full 75 WG</td><td>Trifloxistrobina + tebuconazol</td><td>11 + 3</td><td>20 g</td><td>1.000</td><td>0,20</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 2ª</td></tr>
+          <tr class="prog-obligatorio"><td>5</td><td>Ramillete expuesto a botón blanco</td><td>Venturia</td><td>—</td><td><span class="chip-color verde">🟩</span> Consist Full 75 WG</td><td>Trifloxistrobina + tebuconazol</td><td>11 + 3</td><td>20 g</td><td>1.000</td><td>0,20</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Tebuconazol 2ª</td></tr>
           <tr><td>5</td><td>Ramillete expuesto a botón blanco</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td>1.000</td><td>0,6</td><td><span class="badge-prog opcional">Según humedad relativa o heladas</span></td><td>No cuenta (tizón)</td></tr>
-          <tr class="prog-obligatorio"><td>6</td><td>Inicio de flores abiertas (20-30%)</td><td>Venturia, botritis, alternaria</td><td>—</td><td>Sercadis Duo</td><td>Fluxapiroxad + difenoconazol</td><td>7 + 3</td><td>80 cc</td><td>1.000</td><td>0,80</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Difenoconazol 1ª</td></tr>
+          <tr class="prog-obligatorio"><td>6</td><td>Inicio de flores abiertas (20-30%)</td><td>Venturia, botritis, alternaria</td><td>—</td><td><span class="chip-color amarillo">🟨</span> Sercadis Duo</td><td>Fluxapiroxad + difenoconazol</td><td>7 + 3</td><td>80 cc</td><td>1.000</td><td>0,80</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Difenoconazol 1ª</td></tr>
           <tr class="prog-obligatorio"><td>6</td><td>Inicio de flores abiertas (20-30%)</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td>1.000</td><td>0,6</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
-          <tr class="prog-obligatorio"><td>7</td><td>Plena flor (80%)</td><td>Venturia, botritis, alternaria</td><td>—</td><td>Marcial SC</td><td>Pirimetanilo + difenoconazol</td><td>9 + 3</td><td>70 cc</td><td>1.500</td><td>1,05</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Difenoconazol 2ª</td></tr>
+          <tr class="prog-obligatorio"><td>7</td><td>Plena flor (80%)</td><td>Venturia, botritis, alternaria</td><td>—</td><td><span class="chip-color verde">🟩</span> Marcial SC</td><td>Pirimetanilo + difenoconazol</td><td>9 + 3</td><td>70 cc</td><td>1.500</td><td>1,05</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>Difenoconazol 2ª</td></tr>
           <tr class="prog-obligatorio"><td>7</td><td>Plena flor (80%)</td><td>Tizón</td><td>—</td><td>Agrocopper SP</td><td>Sulfato de cobre pentahidratado</td><td>M1</td><td>60 g</td><td>1.500</td><td>0,9</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td>No cuenta (tizón)</td></tr>
-          <tr class="prog-obligatorio"><td>8</td><td>Caída de pétalos</td><td>Venturia, botritis, saprófitos</td><td>—</td><td>Miravis Duo</td><td>Pidiflumetofeno + difenoconazol</td><td>7 + 3</td><td>45 cc</td><td>1.500</td><td>0,675</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td><span class="badge rotacion_alerta">Difenoconazol 3ª seguida</span></td></tr>
-          <tr class="prog-condicional"><td>9</td><td>Desde 7 días después de caída de pétalos</td><td>Venturia, enfermedades lenticelares</td><td>—</td><td>Mancozeb 80 WP + Systhane 40 WP</td><td>Mancozeb + miclobutanil</td><td>M3 + 3</td><td>240 g + 10 g</td><td>1.500</td><td>3,6 + 0,150</td><td><span class="badge-prog condicional">Tratamiento según condiciones de infección</span></td><td>Corta la racha de difenoconazol</td></tr>
-          <tr><td>10</td><td>Semana 5 (01/02)</td><td>Botritis y otros patógenos</td><td>—</td><td>Bonnus 400 SC</td><td>Pirimetanilo</td><td>9</td><td>70 cc</td><td>1.500</td><td>1,05</td><td><span class="badge-prog opcional">Según humedad relativa</span></td><td>—</td></tr>
+          <tr class="prog-obligatorio"><td>8</td><td>Caída de pétalos</td><td>Venturia, botritis, saprófitos</td><td>—</td><td><span class="chip-color amarillo">🟨</span> Miravis Duo</td><td>Pidiflumetofeno + difenoconazol</td><td>7 + 3</td><td>45 cc</td><td>1.500</td><td>0,675</td><td><span class="badge-prog obligatorio">Obligatorio</span></td><td><span class="badge rotacion_alerta">Difenoconazol 3ª seguida</span></td></tr>
+          <tr class="prog-condicional"><td>9</td><td>Desde 7 días después de caída de pétalos</td><td>Venturia, enfermedades lenticelares</td><td>—</td><td><span class="chip-color verde">🟩</span> Mancozeb 80 WP + Systhane 40 WP</td><td>Mancozeb + miclobutanil</td><td>M3 + 3</td><td>240 g + 10 g</td><td>1.500</td><td>3,6 + 0,150</td><td><span class="badge-prog condicional">Tratamiento según condiciones de infección</span></td><td>Corta la racha de difenoconazol</td></tr>
+          <tr><td>10</td><td>Semana 5 (01/02)</td><td>Botritis y otros patógenos</td><td>—</td><td><span class="chip-color verde">🟩</span> Bonnus 400 SC</td><td>Pirimetanilo</td><td>9</td><td>70 cc</td><td>1.500</td><td>1,05</td><td><span class="badge-prog opcional">Según humedad relativa</span></td><td>—</td></tr>
         </tbody>
       </table>
     </div>
+  </section>
+
+  <section class="bloque">
+    <h2>Guía rápida de rotación</h2>
+    <p class="descripcion">Para que venturia no se haga resistente, los fungicidas se van turnando como un semáforo de dos colores.</p>
+    <div class="guia-regla">
+      <div class="guia-paso amarillo">🟨 Amarillo</div><span>→</span>
+      <div class="guia-paso verde">🟩 Verde</div><span>→</span>
+      <div class="guia-paso amarillo">🟨 Amarillo</div><span>→</span>
+      <div class="guia-paso verde">🟩 Verde</div><span>→ …</span>
+    </div>
+    <div class="guia-reglas-lista">
+      <div><strong>1.</strong> Nunca apliques <strong>dos amarillos seguidos</strong>.</div>
+      <div><strong>2.</strong> No repitas <strong>el mismo producto</strong> en dos aplicaciones seguidas.</div>
+      <div><strong>3.</strong> Respeta <strong>cuántas veces por temporada</strong> se puede usar cada producto (número en cada tarjeta).</div>
+    </div>
+
+    <div class="guia-ayudante">
+      <label for="guiaUltimo"><strong>¿Qué aplicaste la última vez?</strong></label>
+      <select id="guiaUltimo"><option value="">Elige el producto…</option></select>
+      <div id="guiaSugerencia" class="guia-sugerencia"></div>
+    </div>
+
+    <div class="guia-columnas">
+      <div class="guia-col">
+        <h3 class="guia-titulo amarillo">🟨 Amarillos <small>nunca dos seguidos</small></h3>
+        <div id="guiaAmarillos" class="guia-tarjetas"></div>
+      </div>
+      <div class="guia-col">
+        <h3 class="guia-titulo verde">🟩 Verdes <small>van entre dos amarillos</small></h3>
+        <div id="guiaVerdes" class="guia-tarjetas"></div>
+      </div>
+    </div>
+    <p class="nota-guia">⭐ Los verdes marcados con estrella (Captan, Mancozeb, dodina) son los más seguros para rotar: casi no generan resistencia, pero solo protegen si se aplican <strong>antes</strong> de la lluvia.</p>
   </section>
 
   <section class="bloque">
@@ -1040,6 +1153,45 @@
     </div>
     <div class="plan-base">Última aplicación por programa: <strong>7 días después de caída de pétalos — Mancozeb 80 WP + Systhane 40 WP</strong></div>
     <div id="planOpciones"></div>
+  </section>
+
+  <section class="bloque">
+    <h2>¿Qué producto conviene usar ahora?</h2>
+    <p class="descripcion">Ayuda rápida para decidir según la lluvia. Mantén siempre la regla de colores: si tu última aplicación fue 🟨, ahora elige un 🟩, y al revés.</p>
+    <div id="avisoAhora" class="aviso-ahora">Revisando los datos de la estación…</div>
+
+    <div class="ahora-botones">
+      <button class="ahora-btn activo" data-panel="antes">☀️ Antes de la lluvia</button>
+      <button class="ahora-btn" data-panel="despues">🌧️ Ya llovió y no alcancé a aplicar</button>
+    </div>
+
+    <div id="panelAntes" class="ahora-panel">
+      <p class="ahora-texto">Si hay pronóstico de lluvia, aplica <strong>antes</strong>. Estos productos protegen bien y siguen actuando después de la lluvia:</p>
+      <div id="ahoraPreventivos" class="guia-tarjetas"></div>
+      <p class="nota-guia">Los productos de un solo modo de acción (triazoles) van siempre con Mancozeb o Captan.</p>
+    </div>
+
+    <div id="panelDespues" class="ahora-panel" style="display:none;">
+      <p class="ahora-texto">Lo que importa son las <strong>horas desde que empezó el mojado</strong>. Mientras más rápido apliques, más opciones tienes:</p>
+      <div class="tabla-scroll"><table class="tabla-alertas tabla-horas">
+        <thead><tr><th>Horas desde que empezó el mojado</th><th>Productos que todavía sirven (curativos)</th></tr></thead>
+        <tbody id="cuerpoHoras"></tbody>
+      </table></div>
+      <p class="nota-guia">Los triazoles (Systhane, Topas, Candado, T-Buzol, Premiado) van siempre con Mancozeb o Captan. Pasadas las 100 horas ya no hay curativo: protege bien antes de la próxima lluvia.</p>
+    </div>
+
+    <details class="plan-opcion" style="margin-top:14px;">
+      <summary>Evaluación técnica de los productos <span class="resumen">para asesor y administrador</span></summary>
+      <div class="cuerpo">
+        <div class="tabla-scroll"><table class="tabla-alertas">
+          <thead><tr><th>Nivel</th><th>Producto</th><th>Por qué</th></tr></thead>
+          <tbody id="cuerpoEvaluacion"></tbody>
+        </table></div>
+        <p class="nota-guia">Criterios: acción curativa, resistencia al lavado y acción sistémica, riesgo de resistencia y usos que quedan en la temporada, y registro en peral. Basado en las fichas técnicas cargadas; no reemplaza ensayos de eficacia locales.</p>
+      </div>
+    </details>
+
+    <p class="nota-guia" style="margin-top:12px;">ℹ️ Orientación basada en las fichas técnicas de cada producto. Ante dudas, consulta con el asesor.</p>
   </section>
 
 </div>
@@ -1585,7 +1737,8 @@ const CATALOGO_FUNGICIDAS = [
   // Melyra: su etiqueta registra venturia solo en manzano (V. inaequalis). Por recomendación del asesor se usa en peral
   // (fuera de etiqueta) y cuenta como cobertura preventiva. Curativo según etiqueta, sin horas indicadas.
   { clave:'melyra',    nombre:'Melyra',                 ventanaCurativaHoras:null, resistenciaLavado:'desconocida', ingredientes:['mefentrifluconazol','piraclostrobina'], fueraEtiqueta:true },
-  // Elmus: fluxapiroxad (SDHI) + piraclostrobina (estrobilurina). Ficha técnica pendiente: sin ventana curativa cargada.
+  // Elmus: fluxapiroxad (SDHI) + piraclostrobina (estrobilurina). Registrado para venturia en peral (V. pyrina).
+  // Preventivo y curativo según etiqueta, sin horas indicadas: sin ventana curativa cargada.
   { clave:'elmus',     nombre:'Elmus',                  ventanaCurativaHoras:null, resistenciaLavado:'desconocida', ingredientes:['fluxapiroxad','piraclostrobina'] },
   // Ingrediente escrito sin nombre comercial (ej. "Consul + Difenoconazole"): cuenta para la rotación,
   // pero sin ventana curativa porque depende de la etiqueta del producto comercial.
@@ -2762,6 +2915,168 @@ async function cargarFenologia(){
 }
 
 
+
+// --- guía rápida de rotación (para productores) ---
+// color: amarillo = lleva carboxamida (SDHI); verde = rotación. fam: familias químicas para evitar repetirlas seguidas.
+const GUIA_PRODUCTOS = [
+  { n:'Luna Experience',      c:'amarillo', ing:'Fluopiram + tebuconazol',          max:2, fam:['sdhi','ibe'] },
+  { n:'Miravis Duo',          c:'amarillo', ing:'Pidiflumetofeno + difenoconazol',  max:3,   fam:['sdhi','ibe'] },
+  { n:'Sercadis Duo',         c:'amarillo', ing:'Fluxapiroxad + difenoconazol',     max:2,   fam:['sdhi','ibe'] },
+  { n:'Reflect Top',          c:'amarillo', ing:'Isopirazam + difenoconazol',       max:2,   fam:['sdhi','ibe'], asesor:true },
+  { n:'Elmus',                c:'amarillo', ing:'Fluxapiroxad + piraclostrobina',   max:2, fam:['sdhi','estrob'] },
+  { n:'Captan 80 WP',         c:'verde', ing:'Captan',                    max:3, fam:['multi'], estrella:true },
+  { n:'Mancozeb 80 WP + IBE', c:'verde', ing:'Mancozeb + triazol',        max:5, fam:['multi','ibe'], estrella:true },
+  { n:'Consul / Dodine 65 WP',c:'verde', ing:'Dodina',                    max:4, fam:['multi'], estrella:true },
+  { n:'Syllit 400 SC',        c:'verde', ing:'Dodina',                    max:4, fam:['multi'], estrella:true },
+  { n:'Marcial SC',           c:'verde', ing:'Pirimetanilo + difenoconazol', max:3, fam:['anilino','ibe'] },
+  { n:'Bonnus 400 SC',        c:'verde', ing:'Pirimetanilo',              max:2, fam:['anilino'] },
+  { n:'Consist Full',         c:'verde', ing:'Trifloxistrobina + tebuconazol', max:2, fam:['estrob','ibe'] },
+  { n:'Krymet 50 SC',         c:'verde', ing:'Kresoxim-metilo',           max:2, fam:['estrob'] },
+  { n:'Melyra',               c:'verde', ing:'Mefentrifluconazol + piraclostrobina', max:2, fam:['estrob','ibe'], asesor:true },
+  { n:'Systhane 40 WP',       c:'verde', ing:'Miclobutanil',              max:4, fam:['ibe'] },
+  { n:'T-Buzol 25 WP',        c:'verde', ing:'Tebuconazol',               max:2, fam:['ibe'] },
+  { n:'Topas / Candado 200 EW', c:'verde', ing:'Penconazol',              max:'4 / 2', fam:['ibe'] },
+  { n:'Indar 2F',             c:'verde', ing:'Fenbuconazol',              max:2, fam:['ibe'] },
+  { n:'Domark 40 EW',         c:'verde', ing:'Tetraconazol',              max:3, fam:['ibe'] },
+  { n:'Premiado 250 EC',      c:'verde', ing:'Difenoconazol',             max:4, fam:['ibe'] }
+];
+
+function tarjetaGuia(p, extra){
+  return `<div class="guia-tarjeta ${p.c}">
+    <div><div class="nombre">${p.estrella ? '⭐ ' : ''}${p.n}</div>
+      <div class="detalle">${p.ing}${p.asesor ? ' · por recomendación del asesor' : ''}${extra ? ' · ' + extra : ''}</div></div>
+    <div class="max"><b>${p.max}</b>veces por temporada</div></div>`;
+}
+
+function renderGuiaRotacion(){
+  const am = document.getElementById('guiaAmarillos');
+  if(!am) return;
+  am.innerHTML = GUIA_PRODUCTOS.filter(p => p.c === 'amarillo').map(p => tarjetaGuia(p)).join('');
+  document.getElementById('guiaVerdes').innerHTML = GUIA_PRODUCTOS.filter(p => p.c === 'verde')
+    .sort((a, b) => (b.estrella ? 1 : 0) - (a.estrella ? 1 : 0)).map(p => tarjetaGuia(p)).join('');
+  const sel = document.getElementById('guiaUltimo');
+  sel.innerHTML = '<option value="">Elige el producto…</option>' +
+    `<optgroup label="🟨 Amarillos">${GUIA_PRODUCTOS.filter(p => p.c === 'amarillo').map(p => `<option>${p.n}</option>`).join('')}</optgroup>` +
+    `<optgroup label="🟩 Verdes">${GUIA_PRODUCTOS.filter(p => p.c === 'verde').map(p => `<option>${p.n}</option>`).join('')}</optgroup>`;
+  sel.addEventListener('change', sugerirSiguiente);
+}
+
+function sugerirSiguiente(){
+  const cont = document.getElementById('guiaSugerencia');
+  const ultimo = GUIA_PRODUCTOS.find(p => p.n === document.getElementById('guiaUltimo').value);
+  if(!ultimo){ cont.innerHTML = ''; return; }
+  const toca = ultimo.c === 'amarillo' ? 'verde' : 'amarillo';
+  const ingUlt = ultimo.ing.toLowerCase().split(' + ');
+  const opciones = GUIA_PRODUCTOS.filter(p => p.c === toca && p.n !== ultimo.n)
+    // no repetir estrobilurina seguida ni el mismo ingrediente activo
+    .filter(p => !(ultimo.fam.includes('estrob') && p.fam.includes('estrob')))
+    .filter(p => !p.ing.toLowerCase().split(' + ').some(i => ingUlt.includes(i)))
+    .sort((a, b) => (b.estrella ? 1 : 0) - (a.estrella ? 1 : 0));
+  cont.innerHTML = `<div class="titulo">Ahora te toca un ${toca === 'verde' ? '🟩 VERDE' : '🟨 AMARILLO'}. Puedes elegir entre:</div>
+    <div class="guia-tarjetas">${opciones.map(p => tarjetaGuia(p)).join('')}</div>
+    <div class="nota-guia">Antes de aplicar, revisa que no hayas llegado al máximo de veces por temporada de ese producto. Si tienes dudas, consulta con el asesor.</div>`;
+}
+renderGuiaRotacion();
+
+
+// --- ¿qué producto conviene usar ahora? ---
+const AHORA_PREVENTIVOS = ['Miravis Duo','Luna Experience','Elmus','Sercadis Duo','Mancozeb 80 WP + IBE','Marcial SC','Consul / Dodine 65 WP','Captan 80 WP'];
+const AHORA_HORAS = [
+  { desde:0,  hasta:48,  texto:'Menos de 48 h', productos:['Consul / Dodine 65 WP','Marcial SC','Systhane 40 WP','Topas / Candado 200 EW','T-Buzol 25 WP','Miravis Duo'] },
+  { desde:48, hasta:72,  texto:'48 a 72 h',     productos:['Marcial SC','Bonnus 400 SC','Systhane 40 WP','Topas / Candado 200 EW','T-Buzol 25 WP','Miravis Duo'] },
+  { desde:72, hasta:96,  texto:'72 a 96 h',     productos:['Systhane 40 WP','Topas / Candado 200 EW','T-Buzol 25 WP','Miravis Duo','Premiado 250 EC'] },
+  { desde:96, hasta:100, texto:'96 a 100 h',    productos:['Miravis Duo','Premiado 250 EC'] },
+  { desde:100, hasta:Infinity, texto:'Más de 100 h', productos:[] }
+];
+const AHORA_EVALUACION = [
+  ['🥇 Más completos','Miravis Duo 🟨','Dos modos de acción, curativo hasta 100 h, registrado en peral. Máximo 3 por temporada, con 20 días mínimo entre aplicaciones.'],
+  ['','Luna Experience 🟨','Dos modos de acción, translaminar y sistémico, buena resistencia al lavado según referencias de campo. Máximo 2 por temporada.'],
+  ['','Elmus 🟨','Dos modos de acción, sistémico, registrado en peral. Máximo 2. Su estrobilurina tiene más riesgo de resistencia. Carencia 60 días.'],
+  ['','Marcial SC 🟩','Curativo hasta 72 h; el pirimetanilo funciona bien con temperaturas frescas. Máximo 3, no consecutivas.'],
+  ['','Sercadis Duo 🟨','Dos modos de acción, translaminar. Máximo 2 por temporada.'],
+  ['🥈 Rescate curativo','Systhane, Topas / Candado, T-Buzol 🟩','Curativos hasta 96 h y con buena resistencia al lavado. Un solo modo de acción: siempre con Mancozeb o Captan.'],
+  ['','Premiado 🟩','Curativo hasta 100 h, pero es difenoconazol, muy usado en la temporada.'],
+  ['🥉 Base protectora','Mancozeb, Captan 🟩⭐','No generan resistencia, pero no curan y se lavan: aplicar antes de la lluvia y reponer después de lluvias fuertes.'],
+  ['','Dodina: Consul, Dodine, Syllit 🟩⭐','Bajo riesgo de resistencia y curativa hasta 48 h (Consul y Dodine).'],
+  ['Con reservas','Consist Full 🟩','Buen producto, pero máximo 2 por temporada y suma estrobilurinas.'],
+  ['','Krymet 50 SC 🟩','Solo preventivo, de contacto y de un modo de acción: no conviene como herramienta principal con alta presión.'],
+  ['','Reflect Top, Melyra','Sin registro para venturia en peral; Melyra no trae carencia para pera. Solo por indicación del asesor.'],
+  ['','Indar, Domark 🟩','Triazoles sin horas curativas en la etiqueta.'],
+  ['No ahora','Polisulfuro de calcio','Solo en receso invernal.']
+];
+
+function chipProducto(nombre){
+  const p = GUIA_PRODUCTOS.find(x => x.n === nombre);
+  const color = p ? p.c : 'verde';
+  return `<span class="chip-color ${color}">${color === 'amarillo' ? '🟨' : '🟩'} ${nombre}</span>`;
+}
+
+function renderQueUsarAhora(){
+  const cont = document.getElementById('ahoraPreventivos');
+  if(!cont) return;
+  cont.innerHTML = AHORA_PREVENTIVOS.map(n => GUIA_PRODUCTOS.find(p => p.n === n)).filter(Boolean).map(p => tarjetaGuia(p)).join('');
+  document.getElementById('cuerpoHoras').innerHTML = AHORA_HORAS.map((r, i) => `<tr data-i="${i}">
+    <td><strong>${r.texto}</strong></td>
+    <td>${r.productos.length ? `<div class="chips-productos">${r.productos.map(chipProducto).join('')}</div>` : 'Ya no hay curativo. Protege bien antes de la próxima lluvia.'}</td></tr>`).join('');
+  document.getElementById('cuerpoEvaluacion').innerHTML = AHORA_EVALUACION.map(r => `<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+  document.querySelectorAll('.ahora-btn').forEach(b => b.addEventListener('click', () => mostrarPanelAhora(b.dataset.panel)));
+  cargarAvisoAhora();
+}
+
+function mostrarPanelAhora(panel){
+  document.querySelectorAll('.ahora-btn').forEach(b => b.classList.toggle('activo', b.dataset.panel === panel));
+  document.getElementById('panelAntes').style.display = panel === 'antes' ? '' : 'none';
+  document.getElementById('panelDespues').style.display = panel === 'despues' ? '' : 'none';
+}
+
+async function cargarAvisoAhora(){
+  const aviso = document.getElementById('avisoAhora');
+  try{
+    const ahora = new Date();
+    const lecturas = await obtenerLecturasFirestore(new Date(ahora.getTime() - 7*24*3600000), ahora);
+    if(!lecturas.length){ aviso.textContent = 'No hay lecturas de la estación en los últimos 7 días.'; return; }
+    const serie = calcularRiesgoSerie(lecturas);
+    const ultima = serie[serie.length - 1];
+    const horasDesdeUltima = (ahora - ultima.fecha) / 3600000;
+    const fmt = d => d.toLocaleString('es-CL', { weekday:'short', day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    const pie = `<span class="chico">Última lectura de la estación: ${fmt(ultima.fecha)}${horasDesdeUltima > 6 ? ' ⚠️ Los datos de la estación no están al día, así que este aviso puede no reflejar lluvias recientes.' : ''}</span>`;
+    // último bloque de mojado
+    let fin = -1;
+    for(let i = serie.length - 1; i >= 0; i--){ if(estaMojada(serie[i])){ fin = i; break; } }
+    if(fin < 0){
+      aviso.className = 'aviso-ahora ok';
+      aviso.innerHTML = `<span class="grande">☀️ Sin mojado en los últimos 7 días.</span>Buen momento para aplicar un preventivo antes de la próxima lluvia.${pie}`;
+      mostrarPanelAhora('antes'); return;
+    }
+    let ini = fin; while(ini > 0 && estaMojada(serie[ini - 1])) ini--;
+    const inicio = serie[ini].fecha;
+    const enCurso = fin === serie.length - 1 && horasDesdeUltima < 2;
+    const horas = Math.max(0, (ahora - inicio) / 3600000);
+    const pico = Math.max(...serie.slice(ini, fin + 1).map(p => p.avanceAcumuladoPct || 0));
+    const rango = AHORA_HORAS.findIndex(r => horas >= r.desde && horas < r.hasta);
+    document.querySelectorAll('#cuerpoHoras tr').forEach(tr => tr.classList.toggle('actual', Number(tr.dataset.i) === rango));
+    const nivel = pico >= 100 ? 'completó condiciones de infección' : pico >= 75 ? 'llegó al umbral de control' : 'no alcanzó el umbral de control';
+    const opciones = AHORA_HORAS[rango].productos;
+    let texto;
+    if(horas >= 100){
+      aviso.className = 'aviso-ahora';
+      texto = `<span class="grande">🌧️ El último mojado empezó hace ${Math.round(horas / 24)} días.</span>Ya pasó la ventana de los curativos. Si viene lluvia, aplica un preventivo antes.`;
+      mostrarPanelAhora('antes');
+    } else {
+      aviso.className = 'aviso-ahora ' + (pico >= 75 ? 'alerta' : '');
+      texto = `<span class="grande">🌧️ ${enCurso ? 'Hay un mojado en curso: empezó' : 'El último mojado empezó'} hace ${Math.round(horas)} horas</span>` +
+        `(${fmt(inicio)}) y ${nivel} (${Math.round(pico)}% de avance). ` +
+        `Si tu huerto no estaba protegido, todavía puedes usar un curativo: ${opciones.map(chipProducto).join(' ')}`;
+      mostrarPanelAhora('despues');
+    }
+    aviso.innerHTML = texto + pie;
+  } catch(err){
+    console.error(err);
+    aviso.textContent = 'No se pudieron leer los datos de la estación para el aviso automático.';
+  }
+}
+renderQueUsarAhora();
+
 // --- plan de acción frente a la situación climática ---
 const PLAN_FECHA_BASE = '2026-09-28';   // última aplicación del programa: 7 días después de caída de pétalos
 const PLAN_INTERVALO_DIAS = 7;          // recomendación del asesor: a lo más cada 7 días
@@ -2771,7 +3086,7 @@ const PLAN_FUNGICIDAS = {
   3: { nombre:'Marcial SC', tipo:'rotacion', ing:'Pirimetanilo + difenoconazol', frac:'9 + 3', dosis:'67 cc (máx. etiqueta)' },
   4: { nombre:'Miravis Duo', tipo:'carbox', ing:'Pidiflumetofeno + difenoconazol', frac:'7 + 3', dosis:'45 cc' },
   5: { nombre:'Sercadis Duo', tipo:'carbox', ing:'Fluxapiroxad + difenoconazol', frac:'7 + 3', dosis:'80 cc' },
-  6: { nombre:'Elmus', tipo:'carbox', ing:'Fluxapiroxad + piraclostrobina', frac:'7 + 11', dosis:'Según etiqueta (ficha pendiente)' },
+  6: { nombre:'Elmus', tipo:'carbox', ing:'Fluxapiroxad + piraclostrobina', frac:'7 + 11', dosis:'40 cc (máx. 0,6 L/ha)' },
   7: { nombre:'Consist Full', tipo:'rotacion', ing:'Trifloxistrobina + tebuconazol', frac:'11 + 3', dosis:'20 g' },
   8: { nombre:'Reflect Top', tipo:'carbox', ing:'Isopirazam + difenoconazol', frac:'7 + 3', dosis:'100 cc (mojamiento máx. 1.200 L/ha)' }
 };
