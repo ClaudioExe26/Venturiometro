@@ -384,6 +384,9 @@
   .btn-cerrar-aviso{ background:none; border:none; font-size:1.3rem; line-height:1; cursor:pointer; color:#777; padding:0 4px; }
   .resumen-cruce{ background:#fff; border:1px solid var(--linea); border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:0.9rem; display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
   .resumen-cruce:empty{ display:none; }
+  .ultima-lectura{ font-size:0.85rem; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.6); margin:-4px 0 14px 4px; }
+  .ultima-lectura.atrasada{ background:#FFF4E5; color:#8a4b00; text-shadow:none; border-left:4px solid #D9791E; border-radius:0 6px 6px 0; padding:6px 10px; margin-left:0; }
+  .separador-admin{ margin:34px 0 6px; padding:8px 12px; font-size:0.8rem; font-weight:600; color:#fff; background:rgba(31,59,44,0.85); border-radius:6px; }
   .chip-color{ display:inline-block; font-size:0.75rem; font-weight:700; padding:2px 8px; border-radius:10px; white-space:nowrap; }
   .chip-color.amarillo{ background:#FFE45C; color:#5c4600; }
   .chip-color.verde{ background:#92D050; color:#24420a; }
@@ -747,6 +750,7 @@
     <span class="banner-accion-icono" id="bannerAccionIcono">●</span>
     <span id="bannerAccionTexto">Cargando…</span>
   </div>
+  <div class="ultima-lectura" id="ultimaLectura"></div>
 
   <div class="filtros">
     <div class="campo">
@@ -777,31 +781,10 @@
   </div>
 
   <section class="bloque">
-    <h2>Temperatura y humectación foliar</h2>
-    <p class="descripcion">Lectura horaria de la estación. Los tramos sombreados marcan horas con hoja mojada; la línea punteada es la temperatura.</p>
-    <div class="chart-card">
-      <canvas id="graficoClima" height="90"></canvas>
-    </div>
-  </section>
-
-  <section class="bloque">
     <h2>Riesgo de infección en el tiempo</h2>
     <p class="descripcion">Acumulación del % de avance de infección por bloque continuo de mojado, evaluada con la tabla de Mills para <em>V. pyrina</em>. El control se recomienda al llegar a 75%.</p>
     <div class="chart-card">
       <canvas id="graficoRiesgo" height="70"></canvas>
-    </div>
-  </section>
-
-  <section class="bloque">
-    <h2>Detalle hora a hora</h2>
-    <p class="descripcion">Cada lectura del rango elegido, con la acumulación de humectación y el nivel de riesgo evaluado en ese momento — para revisar, por ejemplo, si un día puntual tuvo riesgo real y cuántas horas.</p>
-    <div class="chart-card tabla-scroll" style="max-height:360px; overflow-y:auto; padding:0;">
-      <table class="tabla-alertas" id="tablaDetalle" style="border:none;">
-        <thead>
-          <tr><th>Fecha / hora</th><th>Temp.</th><th>Humedad</th><th>P. rocío</th><th>Lluvia</th><th>Hoja mojada</th><th>Horas acum. · % avance</th><th>Nivel</th></tr>
-        </thead>
-        <tbody id="cuerpoTablaDetalle"></tbody>
-      </table>
     </div>
   </section>
 
@@ -818,8 +801,120 @@
     </div>
   </section>
 
+  <section class="bloque" id="seccionCruce">
+    <h2>Cruce de riesgo × aplicación</h2>
+    <p class="descripcion">Para cada aplicación registrada, se calcula cuántas horas pasaron desde que empezó el evento de riesgo más cercano, y se compara contra la ventana curativa y la resistencia al lavado de ese producto (según su ficha técnica) para estimar si la protección fue correcta, deficiente o nula.</p>
+    <div class="feno-chips" id="chipsCruce"></div>
+    <div class="resumen-cruce" id="resumenCruce"></div>
+    <div class="tabla-scroll">
+      <table class="tabla-alertas">
+        <thead>
+          <tr><th>Fecha aplicación</th><th>Productor</th><th>Producto</th><th>Evento de riesgo más cercano</th><th>Horas desde inicio del evento</th><th>Diagnóstico</th></tr>
+        </thead>
+        <tbody id="cuerpoTablaCruce"><tr><td colspan="6" style="color:#888;">Cargando…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
   <section class="bloque">
-    <h2>Registro de aplicaciones</h2>
+    <h2>Temperatura y humectación foliar</h2>
+    <p class="descripcion">Lectura horaria de la estación. Los tramos sombreados marcan horas con hoja mojada; la línea punteada es la temperatura.</p>
+    <div class="chart-card">
+      <canvas id="graficoClima" height="90"></canvas>
+    </div>
+  </section>
+
+  <section class="bloque">
+    <h2>Detalle hora a hora</h2>
+    <p class="descripcion">Cada lectura del rango elegido, con la acumulación de humectación y el nivel de riesgo evaluado en ese momento — para revisar, por ejemplo, si un día puntual tuvo riesgo real y cuántas horas.</p>
+    <div class="chart-card tabla-scroll" style="max-height:360px; overflow-y:auto; padding:0;">
+      <table class="tabla-alertas" id="tablaDetalle" style="border:none;">
+        <thead>
+          <tr><th>Fecha / hora</th><th>Temp.</th><th>Humedad</th><th>P. rocío</th><th>Lluvia</th><th>Hoja mojada</th><th>Horas acum. · % avance</th><th>Nivel</th></tr>
+        </thead>
+        <tbody id="cuerpoTablaDetalle"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="bloque" id="fuenteMills">
+    <h2>¿De dónde sale el riesgo que muestra esta página?</h2>
+    <p class="descripcion">Cuadro: referencia general de horas de mojamiento para infección leve de Venturia y avance de la infección en cada hora, a las diferentes temperaturas señaladas. Esta es la tabla con la que el venturiómetro calcula el % de avance acumulado.</p>
+    <div class="chart-card tabla-scroll" style="padding:0; overflow-x:auto;">
+      <table class="tabla-alertas" style="border:none;">
+        <thead>
+          <tr><th>Temperatura promedio</th><th>N° horas para infección</th><th>% avance infección / hora</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0,5 – 5 °C</td><td>sobre 48 horas</td><td>2,1%</td></tr>
+          <tr><td>5,6 – 6,0 °C</td><td>30 horas</td><td>3,3%</td></tr>
+          <tr><td>6,1 – 6,6 °C</td><td>25 horas</td><td>4%</td></tr>
+          <tr><td>6,7 – 7,1 °C</td><td>22 horas</td><td>4,5%</td></tr>
+          <tr><td>7,2 – 7,7 °C</td><td>20 horas</td><td>5%</td></tr>
+          <tr><td>7,8 – 8,2 °C</td><td>19 horas</td><td>5,3%</td></tr>
+          <tr><td>8,3 – 8,8 °C</td><td>17 horas</td><td>5,9%</td></tr>
+          <tr><td>8,9 – 9,9 °C</td><td>15 horas</td><td>6,7%</td></tr>
+          <tr><td>10 – 11 °C</td><td>14 horas</td><td>7,1%</td></tr>
+          <tr><td>11,1 – 14,3 °C</td><td>12 horas</td><td>8,3%</td></tr>
+          <tr><td>14,4 – 17,6 °C</td><td>10 horas</td><td>10%</td></tr>
+          <tr><td>17,7 – 18,8 °C</td><td>9 horas</td><td>11,1%</td></tr>
+          <tr><td>18,9 – 23,9 °C</td><td>9 horas</td><td>11,1%</td></tr>
+          <tr><td>24 – 24,4 °C</td><td>9,5 horas</td><td>10,5%</td></tr>
+          <tr><td>24,5 – 25 °C</td><td>11 horas</td><td>9,1%</td></tr>
+          <tr><td>25,5 °C</td><td>13 horas</td><td>7,7%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="descripcion" style="margin-top:18px;"><strong>Observaciones de la tabla original:</strong></p>
+    <ul style="font-size:0.85rem; color:#fff; font-weight:600; line-height:1.6; padding-left:20px; text-shadow:0 1px 3px rgba(0,0,0,0.6), 0 0 8px rgba(0,0,0,0.3);">
+      <li><strong>Para <em>Venturia inaequalis</em>:</strong> si el follaje mojado comienza con horas de luz y permanece toda la noche en igual condición, se deben tomar las horas nocturnas para el cálculo. Si el follaje mojado comienza en la noche, el cálculo empieza a partir de la mañana siguiente.</li>
+      <li><strong>Para <em>Venturia pyrina</em> (peral — la que usa este venturiómetro):</strong> independiente de la presencia o ausencia de luz al inicio del follaje mojado, se toman todas las horas para el cálculo.</li>
+      <li><strong>Margen de seguridad:</strong> se recomienda controlar a partir de la acumulación de un 75% de avance de infección.</li>
+      <li>Considerar también días con humedad relativa igual o sobre 90% como predisponentes a infección.</li>
+    </ul>
+  </section>
+
+  <section class="bloque">
+    <h2>Niveles de riesgo</h2>
+    <p class="descripcion">Dependiendo de cómo esté el clima en cada momento, arriba de la página va a aparecer uno de estos 4 mensajes.</p>
+    <div class="leyenda-niveles">
+      <div class="leyenda-item nivel-sin_riesgo">
+        <span class="leyenda-icono">✅</span>
+        <div>
+          <strong>Sin riesgo</strong>
+          <p>El clima no está favoreciendo el desarrollo de Venturia en este momento.</p>
+        </div>
+      </div>
+      <div class="leyenda-item nivel-en_desarrollo">
+        <span class="leyenda-icono">🟡</span>
+        <div>
+          <strong>En desarrollo</strong>
+          <p>Se están acumulando condiciones favorables (menos de 75% de avance), pero todavía no toca actuar.</p>
+        </div>
+      </div>
+      <div class="leyenda-item nivel-controlar">
+        <span class="leyenda-icono">🟠</span>
+        <div>
+          <strong>Controlar (≥75%)</strong>
+          <p>Se alcanzó el umbral de seguridad de la tabla de Mills — controlar en las próximas 24-48 horas.</p>
+        </div>
+      </div>
+      <div class="leyenda-item nivel-infeccion_establecida">
+        <span class="leyenda-icono">🔴</span>
+        <div>
+          <strong>Infección establecida</strong>
+          <p>Se llegó al 100% de avance — se recomienda aplicar fungicida retroactivo cuanto antes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="separador-admin">Zona de administración · solo para el administrador del venturiómetro</div>
+
+  <section class="bloque">
+    <h2>Administración: registro de aplicaciones</h2>
     <p class="descripcion">Deja registrado qué producto aplicaste y cuándo — así queda cruzado con los eventos de riesgo de arriba, para saber si el huerto quedó protegido a tiempo. Cualquiera con el link puede verlo; solo el administrador puede registrar, editar o eliminar aplicaciones.</p>
 
     <div class="chart-card" style="margin-bottom:18px;">
@@ -922,92 +1017,6 @@
         </thead>
         <tbody id="cuerpoTablaAplicaciones"><tr><td colspan="4" style="color:#888;">Cargando…</td></tr></tbody>
       </table>
-    </div>
-
-    <h3 class="subtitulo-cruce">Cruce de riesgo × aplicación</h3>
-    <p class="descripcion">Para cada aplicación registrada, se calcula cuántas horas pasaron desde que empezó el evento de riesgo más cercano, y se compara contra la ventana curativa y la resistencia al lavado de ese producto (según su ficha técnica) para estimar si la protección fue correcta, deficiente o nula.</p>
-    <div class="feno-chips" id="chipsCruce"></div>
-    <div class="resumen-cruce" id="resumenCruce"></div>
-    <div class="tabla-scroll">
-      <table class="tabla-alertas">
-        <thead>
-          <tr><th>Fecha aplicación</th><th>Productor</th><th>Producto</th><th>Evento de riesgo más cercano</th><th>Horas desde inicio del evento</th><th>Diagnóstico</th></tr>
-        </thead>
-        <tbody id="cuerpoTablaCruce"><tr><td colspan="6" style="color:#888;">Cargando…</td></tr></tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="bloque" id="fuenteMills">
-    <h2>¿De dónde sale el riesgo que muestra esta página?</h2>
-    <p class="descripcion">Cuadro: referencia general de horas de mojamiento para infección leve de Venturia y avance de la infección en cada hora, a las diferentes temperaturas señaladas. Esta es la tabla con la que el venturiómetro calcula el % de avance acumulado.</p>
-    <div class="chart-card tabla-scroll" style="padding:0; overflow-x:auto;">
-      <table class="tabla-alertas" style="border:none;">
-        <thead>
-          <tr><th>Temperatura promedio</th><th>N° horas para infección</th><th>% avance infección / hora</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>0,5 – 5 °C</td><td>sobre 48 horas</td><td>2,1%</td></tr>
-          <tr><td>5,6 – 6,0 °C</td><td>30 horas</td><td>3,3%</td></tr>
-          <tr><td>6,1 – 6,6 °C</td><td>25 horas</td><td>4%</td></tr>
-          <tr><td>6,7 – 7,1 °C</td><td>22 horas</td><td>4,5%</td></tr>
-          <tr><td>7,2 – 7,7 °C</td><td>20 horas</td><td>5%</td></tr>
-          <tr><td>7,8 – 8,2 °C</td><td>19 horas</td><td>5,3%</td></tr>
-          <tr><td>8,3 – 8,8 °C</td><td>17 horas</td><td>5,9%</td></tr>
-          <tr><td>8,9 – 9,9 °C</td><td>15 horas</td><td>6,7%</td></tr>
-          <tr><td>10 – 11 °C</td><td>14 horas</td><td>7,1%</td></tr>
-          <tr><td>11,1 – 14,3 °C</td><td>12 horas</td><td>8,3%</td></tr>
-          <tr><td>14,4 – 17,6 °C</td><td>10 horas</td><td>10%</td></tr>
-          <tr><td>17,7 – 18,8 °C</td><td>9 horas</td><td>11,1%</td></tr>
-          <tr><td>18,9 – 23,9 °C</td><td>9 horas</td><td>11,1%</td></tr>
-          <tr><td>24 – 24,4 °C</td><td>9,5 horas</td><td>10,5%</td></tr>
-          <tr><td>24,5 – 25 °C</td><td>11 horas</td><td>9,1%</td></tr>
-          <tr><td>25,5 °C</td><td>13 horas</td><td>7,7%</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p class="descripcion" style="margin-top:18px;"><strong>Observaciones de la tabla original:</strong></p>
-    <ul style="font-size:0.85rem; color:#fff; font-weight:600; line-height:1.6; padding-left:20px; text-shadow:0 1px 3px rgba(0,0,0,0.6), 0 0 8px rgba(0,0,0,0.3);">
-      <li><strong>Para <em>Venturia inaequalis</em>:</strong> si el follaje mojado comienza con horas de luz y permanece toda la noche en igual condición, se deben tomar las horas nocturnas para el cálculo. Si el follaje mojado comienza en la noche, el cálculo empieza a partir de la mañana siguiente.</li>
-      <li><strong>Para <em>Venturia pyrina</em> (peral — la que usa este venturiómetro):</strong> independiente de la presencia o ausencia de luz al inicio del follaje mojado, se toman todas las horas para el cálculo.</li>
-      <li><strong>Margen de seguridad:</strong> se recomienda controlar a partir de la acumulación de un 75% de avance de infección.</li>
-      <li>Considerar también días con humedad relativa igual o sobre 90% como predisponentes a infección.</li>
-    </ul>
-  </section>
-
-  <section class="bloque">
-    <h2>Niveles de riesgo</h2>
-    <p class="descripcion">Dependiendo de cómo esté el clima en cada momento, arriba de la página va a aparecer uno de estos 4 mensajes.</p>
-    <div class="leyenda-niveles">
-      <div class="leyenda-item nivel-sin_riesgo">
-        <span class="leyenda-icono">✅</span>
-        <div>
-          <strong>Sin riesgo</strong>
-          <p>El clima no está favoreciendo el desarrollo de Venturia en este momento.</p>
-        </div>
-      </div>
-      <div class="leyenda-item nivel-en_desarrollo">
-        <span class="leyenda-icono">🟡</span>
-        <div>
-          <strong>En desarrollo</strong>
-          <p>Se están acumulando condiciones favorables (menos de 75% de avance), pero todavía no toca actuar.</p>
-        </div>
-      </div>
-      <div class="leyenda-item nivel-controlar">
-        <span class="leyenda-icono">🟠</span>
-        <div>
-          <strong>Controlar (≥75%)</strong>
-          <p>Se alcanzó el umbral de seguridad de la tabla de Mills — controlar en las próximas 24-48 horas.</p>
-        </div>
-      </div>
-      <div class="leyenda-item nivel-infeccion_establecida">
-        <span class="leyenda-icono">🔴</span>
-        <div>
-          <strong>Infección establecida</strong>
-          <p>Se llegó al 100% de avance — se recomienda aplicar fungicida retroactivo cuanto antes.</p>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -1460,6 +1469,25 @@ function render(serie){
   document.getElementById('rangoVigente').textContent =
     etiquetas[0] + '  →  ' + etiquetas[etiquetas.length-1];
 
+  // --- hora de la última lectura, para saber si los datos están al día ---
+  const ul = document.getElementById('ultimaLectura');
+  if(ul){
+    const horasAtras = (Date.now() - ultimo.fecha.getTime()) / 3600000;
+    const hoy = new Date(); const ayer = new Date(Date.now() - 86400000);
+    const mismoDia = (d, r) => d.toDateString() === r.toDateString();
+    const hora = ultimo.fecha.toLocaleTimeString('es-CL', { hour:'2-digit', minute:'2-digit' });
+    const cuando = mismoDia(ultimo.fecha, hoy) ? `hoy a las ${hora}` : mismoDia(ultimo.fecha, ayer) ? `ayer a las ${hora}`
+      : ultimo.fecha.toLocaleString('es-CL', { weekday:'long', day:'numeric', month:'long', hour:'2-digit', minute:'2-digit' });
+    if(horasAtras > 6){
+      const dias = horasAtras >= 48 ? `${Math.floor(horasAtras / 24)} días` : `${Math.round(horasAtras)} horas`;
+      ul.className = 'ultima-lectura atrasada';
+      ul.innerHTML = `⚠️ <strong>Última lectura de la estación: ${cuando}</strong> (hace ${dias}). Estos datos pueden no reflejar el clima de hoy.`;
+    } else {
+      ul.className = 'ultima-lectura';
+      ul.textContent = `🕒 Última lectura de la estación: ${cuando}`;
+    }
+  }
+
   // --- banner de "qué hacer ahora", en lenguaje simple ---
   const banner = document.getElementById('bannerAccion');
   banner.className = 'banner-accion nivel-' + ultimo.nivel;
@@ -1565,17 +1593,23 @@ function render(serie){
   const cuerpo = document.getElementById('cuerpoTablaAlertas');
   cuerpo.innerHTML = '';
   const alertas = serie.filter(s => s.nivel==='controlar' || s.nivel==='infeccion_establecida');
-  // colapsar corridas consecutivas del mismo nivel en un solo evento
+  // Un solo evento por bloque continuo de mojado: si el mismo mojado pasa de "Controlar" a
+  // "Infección establecida", se muestra una sola fila con el nivel más alto que alcanzó.
   const eventos = [];
   for(const a of alertas){
     const prev = eventos[eventos.length-1];
-    if(prev && prev.nivel===a.nivel && (a.fecha-prev._ultimaFecha)<=3600*1000*1.5){
-      prev._ultimaFecha = a.fecha; prev.horasAcum = a.horasAcum; prev.avanceAcumuladoPct = a.avanceAcumuladoPct;
+    if(prev && (a.fecha-prev._ultimaFecha)<=3600*1000*1.5){
+      prev._ultimaFecha = a.fecha; prev.horasAcum = a.horasAcum;
+      prev.avanceAcumuladoPct = Math.max(prev.avanceAcumuladoPct, a.avanceAcumuladoPct);
       prev.tempMin = Math.min(prev.tempMin, a.temperaturaC);
       prev.tempMax = Math.max(prev.tempMax, a.temperaturaC);
       prev.lluviaAcumBloque = a.lluviaAcumBloque;
+      if(a.nivel==='infeccion_establecida' && prev.nivel!=='infeccion_establecida'){
+        prev.nivel = 'infeccion_establecida'; prev._fechaInfeccion = a.fecha;
+      }
     } else {
-      eventos.push({...a, _ultimaFecha:a.fecha, tempMin:a.temperaturaC, tempMax:a.temperaturaC});
+      eventos.push({...a, _ultimaFecha:a.fecha, tempMin:a.temperaturaC, tempMax:a.temperaturaC,
+                    _fechaInfeccion: a.nivel==='infeccion_establecida' ? a.fecha : null});
     }
   }
   if(!eventos.length){
@@ -1591,7 +1625,7 @@ function render(serie){
       ? `⚠️ ${lluviaAcum.toFixed(1)} mm — posible lavado`
       : (lluviaAcum > 0 ? `${lluviaAcum.toFixed(1)} mm` : '—');
     tr.innerHTML = `
-      <td>${e.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</td>
+      <td>${(e._fechaInfeccion || e.fecha).toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</td>
       <td><span class="badge ${e.nivel}">${nivelLabel[e.nivel]}</span></td>
       <td>${e.avanceAcumuladoPct}%</td>
       <td>${formatearHoras(e.horasAcum)} h</td>
