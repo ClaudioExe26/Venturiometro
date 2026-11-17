@@ -1451,7 +1451,7 @@ function render(serie){
     document.getElementById('bannerAccionTexto').textContent = 'Sin lecturas guardadas todavía en este rango.';
     return;
   }
-  const etiquetas = serie.map(s => s.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',hour:'2-digit'}));
+  const etiquetas = serie.map(s => s.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',hour:'2-digit', minute:'2-digit', hourCycle:'h23'}));
 
   // --- panel instrumento con el último dato ---
   const ultimo = serie[serie.length-1];
@@ -1475,9 +1475,9 @@ function render(serie){
     const horasAtras = (Date.now() - ultimo.fecha.getTime()) / 3600000;
     const hoy = new Date(); const ayer = new Date(Date.now() - 86400000);
     const mismoDia = (d, r) => d.toDateString() === r.toDateString();
-    const hora = ultimo.fecha.toLocaleTimeString('es-CL', { hour:'2-digit', minute:'2-digit' });
+    const hora = ultimo.fecha.toLocaleTimeString('es-CL', { hour:'2-digit', hourCycle:'h23', minute:'2-digit' });
     const cuando = mismoDia(ultimo.fecha, hoy) ? `hoy a las ${hora}` : mismoDia(ultimo.fecha, ayer) ? `ayer a las ${hora}`
-      : ultimo.fecha.toLocaleString('es-CL', { weekday:'long', day:'numeric', month:'long', hour:'2-digit', minute:'2-digit' });
+      : ultimo.fecha.toLocaleString('es-CL', { weekday:'long', day:'numeric', month:'long', hour:'2-digit', hourCycle:'h23', minute:'2-digit' });
     if(horasAtras > 6){
       const dias = horasAtras >= 48 ? `${Math.floor(horasAtras / 24)} días` : `${Math.round(horasAtras)} horas`;
       ul.className = 'ultima-lectura atrasada';
@@ -1625,7 +1625,7 @@ function render(serie){
       ? `⚠️ ${lluviaAcum.toFixed(1)} mm — posible lavado`
       : (lluviaAcum > 0 ? `${lluviaAcum.toFixed(1)} mm` : '—');
     tr.innerHTML = `
-      <td>${(e._fechaInfeccion || e.fecha).toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</td>
+      <td>${(e._fechaInfeccion || e.fecha).toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit', hourCycle:'h23',minute:'2-digit'})}</td>
       <td><span class="badge ${e.nivel}">${nivelLabel[e.nivel]}</span></td>
       <td>${e.avanceAcumuladoPct}%</td>
       <td>${formatearHoras(e.horasAcum)} h</td>
@@ -1645,7 +1645,7 @@ function render(serie){
       tr.style.background = s.nivel==='infeccion_establecida' ? '#fbe6e2' : s.nivel==='controlar' ? '#fbedd9' : '#faf3d6';
     }
     tr.innerHTML = `
-      <td>${s.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</td>
+      <td>${s.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit', hourCycle:'h23',minute:'2-digit'})}</td>
       <td>${s.temperaturaC.toFixed(1)}°C</td>
       <td>${s.humedadRelativa != null ? s.humedadRelativa.toFixed(0)+'%' : '—'}</td>
       <td>${s.puntoRocioC != null ? s.puntoRocioC.toFixed(1)+'°C' : '—'}</td>
@@ -1926,7 +1926,7 @@ function diagnosticarAplicacion(fechaAplicacion, nombreProducto, serie){
   }
 
   const horasDesdeInicio = (fechaAplicacion - bloque.inicio) / 3600000;
-  const eventoTexto = `${bloque.inicio.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})} (pico ${bloque.picoAvance.toFixed(0)}%)`;
+  const eventoTexto = `${bloque.inicio.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',hour:'2-digit', hourCycle:'h23',minute:'2-digit'})} (pico ${bloque.picoAvance.toFixed(0)}%)`;
   const horasTexto = horasDesdeInicio >= 0 ? `${horasDesdeInicio.toFixed(0)} h después` : `${Math.abs(horasDesdeInicio).toFixed(0)} h antes`;
   const horasTextoSinSufijo = Math.abs(horasDesdeInicio).toFixed(0);
 
@@ -2046,7 +2046,7 @@ function aplicacionesFiltradas(){
     return b.fecha - a.fecha;
   });
 }
-const fmtFechaHora = d => isNaN(d) ? '—' : d.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+const fmtFechaHora = d => isNaN(d) ? '—' : d.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit', hourCycle:'h23',minute:'2-digit'});
 
 function renderRegistroAplicaciones(){
   const cuerpo = document.getElementById('cuerpoTablaAplicaciones');
@@ -2537,7 +2537,7 @@ document.getElementById('cuerpoTablaAplicaciones').addEventListener('click', asy
     mensaje.textContent = 'Editando la aplicación seleccionada. Modifica los campos y presiona "Guardar cambios".';
     document.getElementById('zonaEdicion').scrollIntoView({ behavior:'smooth', block:'center' });
   } else if(btn.dataset.accion === 'eliminar'){
-    const fechaTxt = a.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const fechaTxt = a.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit', hourCycle:'h23',minute:'2-digit'});
     if(!confirm(`¿Eliminar la aplicación de ${a.producto || 'producto sin nombre'} (${etiquetaProductorAdmin(a.aplicadoPor)}) del ${fechaTxt}? Esta acción no se puede deshacer.`)) return;
     try{
       await db.collection('venturiometro_aplicaciones').doc(id).delete();
@@ -2791,7 +2791,7 @@ function dibujarFenologia(series, ahora){
       const x = X(t), y = Y(f.nivelPico);
       const pendiente = f.cob.estado === 'pendiente';
       const c = svgEl('circle', { cx:x, cy:y, r:7, fill: pendiente ? '#fff' : colores[f.cob.estado], stroke: pendiente ? '#D9791E' : '#fff', 'stroke-width': pendiente ? 2.5 : 1.5 });
-      c.append(svgEl('title', {}, `${f.inicio.toLocaleString('es-CL')} · máximo ${f.pico.toFixed(0)}% · ${coberturaLabel[f.cob.estado]} · queda en ${f.despues.toFixed(0)}%`));
+      c.append(svgEl('title', {}, `${f.inicio.toLocaleString('es-CL',{hourCycle:'h23'})} · máximo ${f.pico.toFixed(0)}% · ${coberturaLabel[f.cob.estado]} · queda en ${f.despues.toFixed(0)}%`));
       svg.append(c);
       svg.append(svgEl('text', { x, y:y - 12, 'font-size':11, 'font-weight':600, 'text-anchor':'middle' }, `${f.pico.toFixed(0)}%`));
     }
@@ -2802,7 +2802,7 @@ function dibujarFenologia(series, ahora){
       const x = X(t);
       const alerta = a.rotacion && a.rotacion.length;
       const tri = svgEl('path', { d:`M${x},${appY - 7} L${x + 6},${appY + 5} L${x - 6},${appY + 5} Z`, fill: alerta ? '#D9791E' : '#1F3B2C' });
-      tri.append(svgEl('title', {}, `${a.fecha.toLocaleString('es-CL')} · ${a.producto || 'Aplicación'}${alerta ? ' · ' + textoRotacion(a) : ''}`));
+      tri.append(svgEl('title', {}, `${a.fecha.toLocaleString('es-CL',{hourCycle:'h23'})} · ${a.producto || 'Aplicación'}${alerta ? ' · ' + textoRotacion(a) : ''}`));
       svg.append(tri);
     }
   } else {
@@ -2844,7 +2844,7 @@ function renderTablaFenologia(filas){
   }
   cuerpo.innerHTML = [...filas].reverse().map(f => `
     <tr>
-      <td>${f.inicio.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}${f.enCurso ? ' (en curso)' : ''}</td>
+      <td>${f.inicio.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',hour:'2-digit', hourCycle:'h23',minute:'2-digit'})}${f.enCurso ? ' (en curso)' : ''}</td>
       <td>${f.etapa ? f.etapa.nombre : 'Antes de brotación'}</td>
       <td>${formatearHoras(f.horas)} h</td>
       <td>${f.pico.toFixed(0)}%</td>
@@ -2885,7 +2885,7 @@ function renderTablaRotacion(aplicaciones, conProductor){
     else badge = '<span class="badge rotacion_ok">Rotación OK</span>';
     const ings = (a.ingredientes || []).map(i => `${i}${a.racha && a.racha[i] > 1 ? ` (${a.racha[i]}ª)` : ''}`).join(' + ') || '—';
     return `<tr>
-      <td>${a.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+      <td>${a.fecha.toLocaleString('es-CL',{day:'2-digit',month:'2-digit',hour:'2-digit', hourCycle:'h23',minute:'2-digit'})}</td>
       <td>${etiquetaProductor(a.aplicadoPor)}</td>
       <td>${a.producto || '—'}</td>
       <td>${ings}</td>
@@ -3110,7 +3110,7 @@ async function cargarAvisoAhora(){
     const serie = calcularRiesgoSerie(lecturas);
     const ultima = serie[serie.length - 1];
     const horasDesdeUltima = (ahora - ultima.fecha) / 3600000;
-    const fmt = d => d.toLocaleString('es-CL', { weekday:'short', day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    const fmt = d => d.toLocaleString('es-CL', { weekday:'short', day:'2-digit', month:'2-digit', hour:'2-digit', hourCycle:'h23', minute:'2-digit' });
     const pie = `<span class="chico">Última lectura de la estación: ${fmt(ultima.fecha)}${horasDesdeUltima > 6 ? ' ⚠️ Los datos de la estación no están al día, así que este aviso puede no reflejar lluvias recientes.' : ''}</span>`;
     // último bloque de mojado
     let fin = -1;
